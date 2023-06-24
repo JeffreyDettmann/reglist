@@ -7,6 +7,8 @@ AllCops:
     - 'app/mailers/application_mailer.rb'
     - 'app/models/application_record.rb'
     - 'config/application.rb'
+    - 'db/schema.rb'
+    - 'config/initializers/devise.rb'
     - 'test/application_system_test_case.rb'
     - 'test/test_helper.rb'
   NewCops: enable
