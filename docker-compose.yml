@@ -2,7 +2,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - ${REGLIST_DB:-./tmp/db}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: password
   web:
