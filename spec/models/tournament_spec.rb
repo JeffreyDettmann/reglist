@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Tournament, type: :model do
   it 'works with valid status' do
-    %i[submitted ignored published].each do |status|
+    %i[submitted ignored pending published].each do |status|
       tournament = build(:tournament, status:)
       assert tournament.valid?
     end
