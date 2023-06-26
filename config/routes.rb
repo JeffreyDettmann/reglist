@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: 'tournaments#index'
-    resources :tournaments
+    resources :tournaments do
+      patch :update_status, on: :member
+    end
   end
 end
