@@ -7,7 +7,7 @@ module Admin
 
     def index
       status_filter = params[:status] || :submitted
-      @tournaments = Tournament.where(status: status_filter)
+      @tournaments = Tournament.where(status: status_filter).order(:name)
     end
 
     def create
