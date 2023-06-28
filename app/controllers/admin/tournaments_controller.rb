@@ -28,7 +28,10 @@ module Admin
     def update
       respond_to do |format|
         if @tournament.update(tournament_params)
-          format.html { redirect_to admin_tournaments_url, notice: 'Tournament was successfully updated.' }
+          format.html do
+            redirect_to admin_tournaments_url(status: @tournament.status),
+                        notice: "#{@tournament.name} was successfully updated."
+          end
           format.json { render :show, status: :ok, location: @tournament }
         else
           format.html { render :edit, status: :unprocessable_entity }
@@ -38,10 +41,14 @@ module Admin
     end
 
     def update_status
+      old_status = @tournament.status
       status_valid = Tournament.statuses.include?(params[:status])
       respond_to do |format|
         if status_valid && @tournament.update(status: params[:status])
-          format.html { redirect_to admin_tournaments_url, notice: 'Tournament was successfully updated.' }
+          format.html do
+            redirect_to admin_tournaments_url(status: old_status),
+                        notice: "#{@tournament.name} was successfully updated."
+          end
           format.json { render :show, status: :ok, location: @tournament }
         else
           @tournament.errors.add(:status, 'Invalid Status')

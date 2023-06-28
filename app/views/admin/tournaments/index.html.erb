@@ -1,0 +1,17 @@
+<nav class="navbar">
+  <div class="container-fluid">
+	<div class="navbar-nav ms-auto">
+	  <%= link_to 'Submitted', admin_tournaments_path(status: :submitted) %>
+	</div>
+	<div class="navbar-nav ms-auto">
+	  <%= link_to 'Pending', admin_tournaments_path(status: :pending) %>
+	</div>
+	<div class="navbar-nav ms-auto">
+	  <%= link_to 'Published', admin_tournaments_path(status: :published) %>
+	</div>
+  </div>
+</nav>
+
+<% @tournaments.each do |tournament| %>
+<%= render tournament %>
+<% end %>

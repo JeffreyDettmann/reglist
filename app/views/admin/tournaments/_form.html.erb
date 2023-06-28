@@ -1,0 +1,102 @@
+<%= form_with(model: [:admin, tournament]) do |form| %>
+<% if tournament.errors.any? %>
+<div style="color: red">
+  <h2><%= pluralize(tournament.errors.count, "error") %> prohibited this tournament from being saved:</h2>
+
+  <ul>
+    <% tournament.errors.each do |error| %>
+    <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+<div class="container">
+  <div class="row mb-3">
+	<%= form.label :name, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_field :name, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :liquipedia_url, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_field :liquipedia_url, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :rules_url, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-6">
+	  <%= form.text_field :rules_url, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :registration_url, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-6">
+	  <%= form.text_field :registration_url, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :registration_close, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.date_field :registration_close, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :format, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_field :format, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :restrictions, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_area :restrictions, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :notes, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_area :notes, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :organizers, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_area :organizers, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :prize_pool, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_field :prize_pool, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :game, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-8">
+	  <%= form.select :game, ['Age of Empires I', 'Age of Empires II', 'Age of Empires III', 'Age of Empires IV', 'Age of Mythology' ], class: 'form-select' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :tier, class: 'col-sm-1 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.text_field :tier, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :start_date, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.date_field :start_date, class: 'form-control' %>
+	</div>
+  </div>
+  <div class="row mb-3">
+	<%= form.label :end_date, class: 'col-sm-2 col-form-label' %>
+	<div class="col-sm-4">
+	  <%= form.date_field :end_date, class: 'form-control' %>
+	</div>
+  </div>
+</div>
+<div>
+  <%= form.submit %>
+</div>
+<% end %>

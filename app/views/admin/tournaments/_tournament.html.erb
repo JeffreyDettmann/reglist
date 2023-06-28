@@ -1,0 +1,32 @@
+<div class="container">
+  <h2><%= tournament.name %></h2>
+  <div class="row">
+	<div class="col-1">
+	  <%= tournament.game %>
+	</div>
+	<div class="col-1">
+	  <%= tournament.tier %>
+	</div>
+	<div class="col-1">
+	  <%= link_to("liquipedia", "https://liquipedia.net#{tournament.liquipedia_url}") if tournament.liquipedia_url.present? %>
+	</div>
+	<div class="col-1">
+	  <%= link_to("rules", "#{tournament.rules_url}") if tournament.rules_url.present? %>
+	</div>
+	<div class="col-1">
+	  <%= link_to("registration", "#{tournament.registration_url}") if tournament.registration_url.present? %>
+	</div>
+	<div class="col-1">
+	  <%= button_to("Accept", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :pending }) if ['submitted', 'ignored'].include?(tournament.status) %>
+	</div>
+	<div class="col-1">
+	  <%= button_to("Ignore", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :ignored }) unless tournament.status == 'ignored' %>
+	</div>
+	<div class="col-1">
+	  <%= button_to("Publish", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :published }) unless ['ignored', 'published'].include?(tournament.status) %>
+	</div>
+	<div class="col-sm">
+	  <%= link_to('Edit', edit_admin_tournament_path(tournament)) if ['pending', 'published'].include?(tournament.status) %>
+	</div>
+  </div>
+</div>

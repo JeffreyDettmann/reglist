@@ -161,10 +161,10 @@ RSpec.describe 'Admin::Tournaments', type: :request do
           expect(submitted.name).to eq new_name
         end
 
-        it 'redirects to tournaments page' do
+        it 'redirects to tournaments page based on status' do
           new_name = 'New Name'
           patch admin_tournament_path(submitted), params: { tournament: { name: new_name } }
-          expect(response).to redirect_to(admin_tournaments_url)
+          expect(response).to redirect_to(admin_tournaments_url(status: submitted.status))
         end
       end
 
@@ -202,6 +202,11 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         submitted.reload
         expect(submitted.status).to eq 'submitted'
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'redirects to tournaments page of previous status' do
+        patch update_status_admin_tournament_path(submitted), params: { status: :pending }
+        expect(response).to redirect_to(admin_tournaments_url(status: submitted.status))
       end
     end
   end

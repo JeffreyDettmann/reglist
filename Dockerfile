@@ -11,6 +11,9 @@ RUN apt-get install nodejs
 
 RUN npm install --global yarn
 
+RUN yarn add @hotwired/turbo-rails
+RUN yarn add @hotwired/stimulus
+
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
 RUN bundle install
