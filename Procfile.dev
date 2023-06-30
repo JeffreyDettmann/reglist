@@ -1,2 +1,2 @@
+css: yarn build:css --watch
 web: unset PORT && env RUBY_DEBUG_OPEN=true bundle exec rails s -p 3000 -b '0.0.0.0'
-css: yarn watch:css

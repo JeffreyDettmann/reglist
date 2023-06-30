@@ -1,5 +1,17 @@
 body {
-    background-color: powderblue;	
+    background-color: floralwhite;	
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	filter: brightness(75%);
+}
+
+.banner {
+	background-color: lightsalmon;
 }
 
 .aoei {

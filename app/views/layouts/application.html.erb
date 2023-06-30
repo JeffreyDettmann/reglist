@@ -13,27 +13,27 @@
 
   <body>
 	<div class="container">
-	  <div class="banner row mt-5">
-		<h1 class="col-11">Age of Empires Tournament Registration Opportunities</h1>
-		<div class="col-1">
-          <%= image_tag('profile_800x800.png', width: 80, class: 'rounded', alt: :logo) %>
-		  </div>
+	  <div class="banner rounded row mt-5">
+		<h1 class="col-11 text-center">Age of Empires Tournament Registration Opportunities</h1>
+		<div class="col-1 mt-2">
+		  <a data-bs-toggle="collapse" href="#bottom-navbar">
+			<%= image_tag('profile_800x800.png', width: 80, class: 'rounded', alt: :logo) %>
+		  </a>
+		</div>
 	  </div>
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
       <%= yield %>
-	  <nav class="navbar">
-		<div class="container-fluid">
-		  <div class="navbar-nav ms-auto">
-			<%= link_to 'Home', root_url %>
+	  <nav class="navbar <%= 'collapse' unless current_user %>" id="bottom-navbar">
+		  <div>
+			<%= link_to 'Home', root_url  if current_user %>
 		  </div>
-		  <div class="navbar-nav ms-auto">
+		  <div>
 			<%= link_to 'Manage tournaments', admin_tournaments_path %>
 		  </div>
-		  <div class="navbar-nav ms-auto">
+		  <div>
 			<%= button_to('Sign Out', destroy_user_session_path, method: :delete) if current_user %>
 		  </div>
-		</div>
 	  </nav>
 	</div>
   </body>
