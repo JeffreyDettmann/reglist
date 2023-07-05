@@ -3,7 +3,7 @@ FROM ruby:3.1.2-slim-bullseye AS app
 WORKDIR /app
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends build-essential curl libpq-dev git postgresql-client
+  && apt-get install -y --no-install-recommends build-essential curl libpq-dev postgresql-client netcat
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh && bash /tmp/nodesource_setup.sh
 
