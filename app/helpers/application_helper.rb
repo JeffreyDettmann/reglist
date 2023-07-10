@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  def maybe_link_name(tournament)
+    if tournament.info_url.present?
+      link_to(tournament.name, tournament.info_url)
+    else
+      tournament.name
+    end
+  end
+
   def divided_content(content)
     content&.gsub("\n", '<br/>')
   end

@@ -4,7 +4,7 @@
 	  <%= tournament.game %>
 	</div>
 	<div class="col-12 col-lg-2">
-	  <%= tournament.name %>
+	  <%= maybe_link_name(tournament) %>
 	</div>
 	<div class="col-12 col-lg-1">
 	  <span class="d-lg-none">Registration closes <%= tournament.registration_close&.to_fs(:day_month) %></span> <span class="d-none d-lg-inline"><%= tournament.registration_close&.to_fs(:short) %></span>
