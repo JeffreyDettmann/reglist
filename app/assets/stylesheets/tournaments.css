@@ -26,3 +26,11 @@ a:hover {
 .aoeiv {
     background-color: lightblue;
 }
+.aom {
+    background-color: slategray;
+    color: white;
+}
+
+.aom a {
+    color: lightblue;
+}

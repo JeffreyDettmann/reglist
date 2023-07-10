@@ -1,38 +1,38 @@
 <div class="container rounded border border-dark mb-2 p-2 <%= class_for_tournament(tournament) %>">
   <div class="row mb-2">
-	<div class="col-2">
+	<div class="col-12 col-lg-2">
 	  <%= tournament.game %>
 	</div>
-	<div class="col-1">
-	  <%= tournament.registration_close&.to_fs(:short) %>
-	</div>
-	<div class="col-2">
+	<div class="col-12 col-lg-2">
 	  <%= tournament.name %>
 	</div>
-	<div class="col-1">
+	<div class="col-12 col-lg-1">
+	  <span class="d-lg-none">Registration closes <%= tournament.registration_close&.to_fs(:day_month) %></span> <span class="d-none d-lg-inline"><%= tournament.registration_close&.to_fs(:short) %></span>
+	</div>
+	<div class="col-12 col-lg-1">
 	  <%= link_to("rules", "#{tournament.rules_url}") if tournament.rules_url.present? %>
 	</div>
-	<div class="col-1">
-	  <%= link_to("registration", "#{tournament.registration_url}") if tournament.registration_url.present? %>
+	<div class="col-12 col-lg-1">
+	  <%= link_to("register", "#{tournament.registration_url}") if tournament.registration_url.present? %>
 	</div>
-	<div class="col-3">
-	  <%= tournament.restrictions %>
+	<div class="col-12 col-lg-3">
+	  <%== divided_content(tournament.restrictions) %>
 	</div>
-	<div class="col-2">
-	  <%= tournament.notes %>
+	<div class="col-12 col-lg-2">
+	  <%== divided_content(tournament.notes) %>
 	</div>
   </div>
   <div class="row collapse" id="moreInfo<%= tournament.id %>">
-	<div class="col-3">
+	<div class="col-12 col-lg-3">
 	  Tournament Dates: <%= "#{tournament.start_date&.to_fs(:short)} - #{tournament.end_date&.to_fs(:short)}" %>
 	</div>
-	<div class="col-2">
+	<div class="col-12 col-lg-2">
 	  Tier: <%= tournament.tier %> <%= "(#{tournament.prize_pool})" if tournament.prize_pool.present? %>
 	</div>
-	<div class="col-2">
+	<div class="col-12 col-lg-2">
 	  Format: <%= tournament.format %>
 	</div>
-	<div class="col-4">
+	<div class="col-12 col-lg-4">
 	  Organizers: <%= tournament.organizers %>
 	</div>
   </div>
