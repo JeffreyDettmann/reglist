@@ -4,6 +4,7 @@ module Admin
   # Manages vetting and publication of Tournaments
   class TournamentsController < AdminController
     before_action :set_tournament, only: %i[show edit update destroy update_status]
+    before_action :new_tournament, only: :new
 
     def index
       status_filter = params[:status] || :submitted
@@ -13,6 +14,7 @@ module Admin
     def create
       @tournament = Tournament.new
       @tournament.assign_attributes(tournament_params)
+      @tournament.status = :pending if current_user.admin?
 
       respond_to do |format|
         if @tournament.save
@@ -59,6 +61,10 @@ module Admin
     end
 
     private
+
+    def new_tournament
+      @tournament = Tournament.new(game: 'Age of Empires II')
+    end
 
     def set_tournament
       @tournament = Tournament.find(params[:id])

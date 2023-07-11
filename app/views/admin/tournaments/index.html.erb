@@ -1,3 +1,4 @@
+<%= button_to("New", new_admin_tournament_path, method: :get) %>
 <nav class="navbar">
   <div class="container-fluid">
 	<div class="navbar-nav ms-auto">
@@ -11,7 +12,6 @@
 	</div>
   </div>
 </nav>
-
 <% @tournaments.each do |tournament| %>
 <%= render tournament %>
 <% end %>

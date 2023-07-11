@@ -85,6 +85,20 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
+    context 'when logged in as admin' do
+      before do
+        user = create(:user, admin: true)
+        sign_in user
+        user.confirm
+      end
+
+      it 'sets status to pending' do
+        post admin_tournaments_path, params: { tournament: { name: 'Admin Sample Tournament' } }
+        tournament = Tournament.last
+        expect(tournament.status).to eq 'pending'
+      end
+    end
+
     context 'when logged in' do
       before do
         user = create(:user)
@@ -96,6 +110,12 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         expect do
           post admin_tournaments_path, params: { tournament: { name: 'Sample Tournament' } }
         end.to change(Tournament, :count).by(1)
+      end
+
+      it 'sets status to submitted' do
+        post admin_tournaments_path, params: { tournament: { name: 'Sample Tournament' } }
+        tournament = Tournament.last
+        expect(tournament.status).to eq 'submitted'
       end
 
       context 'with existing liquipedia url' do
