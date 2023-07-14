@@ -47,11 +47,29 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         end
       end
 
+      it 'returns old tournaments separately for published' do
+        index = 200
+        Tournament.statuses.each do |status, _|
+          create(:tournament, name: "Tournament #{index}", status:, registration_close: 2.days.ago)
+          index += 1
+        end
+        tournament_counts.map do |status, count|
+          get admin_tournaments_path, params: { status: }
+          if status == :published
+            expect(assigns(:tournaments).size).to eq count
+            expect(assigns(:old_tournaments).size).to eq 1
+          else
+            expect(assigns(:tournaments).size).to eq count + 1
+            expect(assigns(:old_tournaments).size).to eq 0
+          end
+        end
+      end
+
       def load_tournaments
         index = 0
         tournament_counts.map do |status, count|
           count.times do
-            create(:tournament, name: "Tournament #{index}", status:)
+            create(:tournament, name: "Tournament #{index}", status:, registration_close: 2.days.from_now)
             index += 1
           end
         end

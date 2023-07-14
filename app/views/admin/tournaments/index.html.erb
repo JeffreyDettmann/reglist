@@ -15,3 +15,9 @@
 <% @tournaments.each do |tournament| %>
 <%= render tournament %>
 <% end %>
+<% if @old_tournaments.present? %>
+<h2>Past Tournaments</h2>
+<% @old_tournaments.each do |tournament| %>
+<%= render tournament %>
+<% end
+  end %>

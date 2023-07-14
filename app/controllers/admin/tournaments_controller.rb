@@ -8,7 +8,13 @@ module Admin
 
     def index
       status_filter = params[:status] || :submitted
-      @tournaments = Tournament.where(status: status_filter).order(:name)
+      if status_filter == 'published'
+        @tournaments = Tournament.where(status: status_filter, registration_close: 0.days.ago..).order(:name)
+        @old_tournaments = Tournament.where(status: status_filter, registration_close: ...0.days.ago).order(:name)
+      else
+        @tournaments = Tournament.where(status: status_filter).order(:name)
+        @old_tournaments = []
+      end
     end
 
     def create
