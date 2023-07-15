@@ -17,11 +17,57 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       expect(response).to be_successful
     end
 
-    context 'when logged in' do
+    context 'when logged in as user' do
+      let(:tournament_counts) { { submitted: 3, pending: 4, ignored: 5, published: 6 } }
+      before do
+        @user = create(:user, admin: false)
+        sign_in @user
+        @user.confirm
+        load_tournaments
+      end
+
+      it 'returns the appropriate tournaments when filtered' do
+        tnames = Set.new
+        tournament_counts.map do |status, count|
+          get admin_tournaments_path, params: { status: }
+          expect(assigns(:tournaments).size).to eq count
+          expect(assigns(:unapproved_tournaments).size).to eq 1
+          assigns(:tournaments).each do |tournament|
+            expect(tournament.users).to include @user
+            expect(tournament.status).to eq status.to_s
+            expect(tnames).not_to include tournament.name
+            tnames << tournament.name
+          end
+        end
+      end
+
+      def load_tournaments
+        index = 0
+        tournament_counts.map do |status, count|
+          create(:tournament, name: "Unowned tournament #{index}", status:, registration_close: 2.days.ago)
+          index += 1
+          create(:tournament, name: "Unapproved tournament #{index}",
+                              users: [@user],
+                              status:, registration_close: 2.days.ago)
+          index += 1
+          count.times do
+            new_tournament = create(:tournament,
+                                    name: "Tournament #{index}",
+                                    users: [@user],
+                                    status:,
+                                    registration_close: 2.days.from_now)
+            new_tournament.tournament_claims.first.approve!
+            index += 1
+          end
+        end
+      end
+    end
+
+    context 'when logged in as admin' do
       let(:tournament_counts) { { submitted: 3, pending: 4, ignored: 5, published: 6 } }
       before do
         load_tournaments
-        user = create(:user)
+        user = create(:user, admin: true)
         sign_in user
         user.confirm
       end
@@ -115,9 +161,15 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         tournament = Tournament.last
         expect(tournament.status).to eq 'pending'
       end
+
+      it 'does not create tournament claim' do
+        expect do
+          post admin_tournaments_path, params: { tournament: { name: 'Admin Sample Tournament' } }
+        end.to change(TournamentClaim, :count).by 0
+      end
     end
 
-    context 'when logged in' do
+    context 'when logged in as user' do
       before do
         user = create(:user)
         sign_in user
@@ -128,6 +180,18 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         expect do
           post admin_tournaments_path, params: { tournament: { name: 'Sample Tournament' } }
         end.to change(Tournament, :count).by(1)
+      end
+
+      it 'creates tournament claim' do
+        expect do
+          post admin_tournaments_path, params: { tournament: { name: 'Sample Tournament' } }
+        end.to change(TournamentClaim, :count).by 1
+      end
+
+      it 'approves tournament claim' do
+        post admin_tournaments_path, params: { tournament: { name: 'Sample Tournament' } }
+        tournament = Tournament.last
+        assert tournament.tournament_claims.first.approved
       end
 
       it 'sets status to submitted' do
@@ -162,16 +226,43 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
-    context 'when logged in' do
+    context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user)
+        user = create(:user, admin: true)
         sign_in user
         user.confirm
       end
 
       it 'succeeds if authenticated' do
         get edit_admin_tournament_path(submitted)
+        expect(response).to be_successful
+      end
+    end
+
+    context 'when logged in as user' do
+      let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+      before do
+        @user = create(:user)
+        @user.confirm
+        sign_in @user
+      end
+
+      it 'fails if not owned' do
+        get edit_admin_tournament_path(unowned)
+        expect(response).to redirect_to(admin_tournaments_url(status: unowned.status))
+      end
+
+      it 'fails if not approved' do
+        get edit_admin_tournament_path(unapproved)
+        expect(response).to redirect_to(admin_tournaments_url(status: unapproved.status))
+      end
+
+      it 'succeeds if approved' do
+        approved = unapproved
+        approved.tournament_claims.first.approve!
+        get edit_admin_tournament_path(approved)
         expect(response).to be_successful
       end
     end
@@ -183,10 +274,10 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
-    context 'when logged in' do
+    context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user)
+        user = create(:user, admin: true)
         sign_in user
         user.confirm
       end
@@ -213,6 +304,37 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         end
       end
     end
+
+    context 'when logged in as user' do
+      let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+      let(:new_name) { 'New Name' }
+      let(:valid_params) { { tournament: { name: new_name } } }
+      before do
+        @user = create(:user)
+        @user.confirm
+        sign_in @user
+      end
+
+      it 'fails if not owned' do
+        patch admin_tournament_path(unowned), params: valid_params
+        expect(response).to redirect_to(admin_tournaments_url(status: unowned.status))
+      end
+
+      it 'fails if not approved' do
+        patch admin_tournament_path(unapproved), params: valid_params
+        expect(response).to redirect_to(admin_tournaments_url(status: unapproved.status))
+      end
+
+      it 'succeeds if approved' do
+        approved = unapproved
+        approved.tournament_claims.first.approve!
+        patch admin_tournament_path(approved), params: valid_params
+        approved.reload
+        expect(response).to redirect_to(admin_tournaments_url(status: approved.status))
+        expect(approved.name).to eq new_name
+      end
+    end
   end
 
   describe 'PATCH /update_status' do
@@ -221,10 +343,78 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
-    context 'when logged in' do
+    context 'when logged in as user' do
+      before do
+        @user = create(:user, admin: false)
+        sign_in @user
+        @user.confirm
+      end
+
+      context 'working with own tournament' do
+        before(:each) do
+          @submitted = create(:tournament, name: 'Submitted Tournament', users: [@user])
+          @submitted.tournament_claims.first.approve!
+        end
+
+        it 'updates status with valid status' do
+          patch update_status_admin_tournament_path(@submitted), params: { status: :pending }
+          @submitted.reload
+          expect(@submitted.status).to eq 'pending'
+        end
+
+        it 'fails with invalid status' do
+          patch update_status_admin_tournament_path(@submitted), params: { status: :invalid_status }
+          @submitted.reload
+          expect(@submitted.status).to eq 'submitted'
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'redirects to tournaments page of previous status' do
+          patch update_status_admin_tournament_path(@submitted), params: { status: :pending }
+          expect(response).to redirect_to(admin_tournaments_url(status: @submitted.status))
+        end
+
+        it 'cannot publish' do
+          patch update_status_admin_tournament_path(@submitted), params: { status: :published }
+          expect(response).to redirect_to(admin_tournaments_url(status: @submitted.status))
+          @submitted.reload
+          expect(@submitted.status).to eq 'submitted'
+        end
+      end
+
+      context 'working with not approved tournament' do
+        let(:submitted) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+
+        it 'redirects and does not update' do
+          patch update_status_admin_tournament_path(submitted), params: { status: :pending }
+          expect(flash[:alert]).to eq 'You are not authorized to update this tournament'
+          submitted.reload
+          expect(submitted.status).to eq 'submitted'
+          expect(response).to redirect_to(admin_tournaments_url(status: submitted.status))
+        end
+      end
+
+      context 'working with not own tournament' do
+        let(:other_user) { create(:user, email: 'other@example.com') }
+        before(:each) do
+          @submitted = create(:tournament, name: 'Submitted Tournament', users: [other_user])
+          @submitted.tournament_claims.first.approve!
+        end
+
+        it 'redirects and does not update' do
+          patch update_status_admin_tournament_path(@submitted), params: { status: :pending }
+          expect(flash[:alert]).to eq 'You are not authorized to update this tournament'
+          @submitted.reload
+          expect(@submitted.status).to eq 'submitted'
+          expect(response).to redirect_to(admin_tournaments_url(status: @submitted.status))
+        end
+      end
+    end
+
+    context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user)
+        user = create(:user, admin: true)
         sign_in user
         user.confirm
       end

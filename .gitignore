@@ -37,6 +37,7 @@
 # Ignore emacs modified files
 *~
 .#*
+TAGS
 
 /app/assets/builds/*
 !/app/assets/builds/.keep

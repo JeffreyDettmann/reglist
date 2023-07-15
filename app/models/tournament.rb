@@ -4,6 +4,10 @@
 # to register or not
 class Tournament < ApplicationRecord
   enum status: %i[submitted ignored pending published]
+
+  has_many :tournament_claims
+  has_many :users, through: :tournament_claims
+
   validates :liquipedia_url, uniqueness: true, allow_nil: true, format: { with: %r{\A/ageofempires/} }
   validates :name, uniqueness: true, presence: true
 

@@ -22,5 +22,9 @@ Metrics/BlockLength:
     - 'config/environments/*'
     - 'spec/**/*'
 
+Metrics/ClassLength:
+  Exclude:
+    - 'app/controllers/**/*'
+
 Metrics/MethodLength:
   Max: 20

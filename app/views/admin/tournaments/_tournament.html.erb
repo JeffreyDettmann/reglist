@@ -1,5 +1,5 @@
 <div class="container">
-  <h2><%= tournament.name %></h2>
+  <h2 class="<%= name_class(tournament) %>"><%= tournament.name %></h2>
   <div class="row">
 	<div class="col-1">
 	  <%= tournament.game %>
@@ -23,7 +23,7 @@
 	  <%= button_to("Ignore", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :ignored }) unless tournament.status == 'ignored' %>
 	</div>
 	<div class="col-1">
-	  <%= button_to("Publish", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :published }) unless ['ignored', 'published'].include?(tournament.status) %>
+	  <%= button_to("Publish", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :published }) if current_user.admin? && !['ignored', 'published'].include?(tournament.status) %>
 	</div>
 	<div class="col-sm">
 	  <%= link_to('Edit', edit_admin_tournament_path(tournament)) if ['pending', 'published'].include?(tournament.status) %>

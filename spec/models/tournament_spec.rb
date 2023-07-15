@@ -82,4 +82,11 @@ RSpec.describe Tournament, type: :model do
     new_tournament = build(:tournament, name: '')
     assert !new_tournament.valid?
   end
+
+  it 'removes leading and trailing space from name' do
+    name = ' Cool tournament '
+    new_tournament = create(:tournament, name:)
+    new_tournament.reload
+    expect(new_tournament.name).to eq 'Cool tournament'
+  end
 end
