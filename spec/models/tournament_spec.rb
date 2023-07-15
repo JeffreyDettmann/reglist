@@ -30,6 +30,39 @@ RSpec.describe Tournament, type: :model do
     assert !new_tournament.valid?
   end
 
+  it 'allows multiple null liquipedia_urls' do
+    url = nil
+    create(:tournament, name: 'Existing', liquipedia_url: url)
+    new_tournament = build(:tournament, name: 'New', liquipedia_url: "#{url} ")
+    assert new_tournament.valid?
+    new_tournament.save!
+  end
+
+  it 'nulls empty liquipedia_urls' do
+    url = ''
+    new_tournament = create(:tournament, name: 'Existing', liquipedia_url: url)
+    new_tournament.reload
+    expect(new_tournament.liquipedia_url).to be_nil
+  end
+
+  it 'checks validity of liquipedia_urls' do
+    url = '/foo/bar'
+    new_tournament = build(:tournament, name: 'New', liquipedia_url: "#{url} ")
+    assert !new_tournament.valid?
+  end
+
+  it 'removes https protocol-domain for valid liquipedia_url' do
+    url = 'https://liquipedia.net/ageofempires/Poseidon_Cup/2'
+    new_tournament = create(:tournament, name: 'Existing', liquipedia_url: url)
+    expect(new_tournament.liquipedia_url).to eq '/ageofempires/Poseidon_Cup/2'
+  end
+
+  it 'removes http protocol-domain for valid liquipedia_url' do
+    url = 'http://liquipedia.net/ageofempires/Poseidon_Cup/2'
+    new_tournament = create(:tournament, name: 'Existing', liquipedia_url: url)
+    expect(new_tournament.liquipedia_url).to eq '/ageofempires/Poseidon_Cup/2'
+  end
+
   it 'guarantees uniqueness of name' do
     name = 'Cool tournament'
     create(:tournament, name:)
