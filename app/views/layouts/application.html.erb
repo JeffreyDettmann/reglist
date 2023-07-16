@@ -26,6 +26,7 @@
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
       <%= yield %>
+      <div>Have something you'd like to tell us? <%= link_to 'Send us a message!', new_messages_path %></div>
 	  <nav class="navbar <%= 'collapse' unless current_user %>" id="bottom-navbar">
 		  <div>
 			<%= link_to 'Home', root_url  if current_user %>

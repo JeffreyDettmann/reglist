@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'opportunities#index'
 
+  resource :messages, only: %i[new create]
+
   namespace :admin do
     root to: 'tournaments#index'
     resources :tournaments do
