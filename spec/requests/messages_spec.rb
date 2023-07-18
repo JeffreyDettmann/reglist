@@ -70,6 +70,36 @@ RSpec.describe 'Messages', type: :request do
         end.to change(Message, :count).by(1)
         expect(Message.last.user).to eq @user
       end
+
+      it 'redirects to admin messages' do
+        body = 'You are doing a great job!'
+        post messages_path, params: { message: { body: } }
+        expect(response).to redirect_to(admin_messages_url)
+      end
+    end
+
+    context 'admin user' do
+      before do
+        @user = create(:user, confirmed_at: Time.now)
+        admin = create(:user, admin: true, confirmed_at: Time.now)
+        sign_in admin
+      end
+
+      it 'adds user to message' do
+        body = 'Thanks for the compliment!'
+        expect do
+          post messages_path, params: { message: { user_id: @user.id, body: } }
+        end.to change(Message, :count).by(1)
+        message = Message.last
+        expect(message.user).to eq @user
+        assert message.from_admin?
+      end
+
+      it 'redirects to admin messages' do
+        body = 'Thanks for the compliment!'
+        post messages_path, params: { message: { body: } }
+        expect(response).to redirect_to(admin_messages_url)
+      end
     end
   end
 end

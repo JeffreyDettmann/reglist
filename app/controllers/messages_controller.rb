@@ -2,17 +2,23 @@
 
 # Handles messages from unrestricted part of site
 class MessagesController < ApplicationController
-  def new
-    @message = Message.new
-  end
+  before_action :new_tournament, only: %i[create new]
 
   def create
-    @message = Message.new
     @message.assign_attributes(message_params)
-    @message.user = current_user
+    if current_user
+      if current_user.admin?
+        @message.from_admin = true
+      else
+        @message.user = current_user
+      end
+      redirect = admin_messages_url
+    else
+      redirect = root_url
+    end
     respond_to do |format|
       if @message.save
-        format.html { redirect_to root_url, notice: 'Thank you for the comment!' }
+        format.html { redirect_to redirect, notice: 'Thank you for the comment!' }
         format.json { render :show, status: :created, location: @message }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -23,7 +29,11 @@ class MessagesController < ApplicationController
 
   private
 
+  def new_tournament
+    @message = Message.new
+  end
+
   def message_params
-    params.require(:message).permit(:body)
+    params.require(:message).permit(:body, :user_id)
   end
 end

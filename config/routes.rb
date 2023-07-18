@@ -12,5 +12,8 @@ Rails.application.routes.draw do
     resources :tournaments do
       patch :update_status, on: :member
     end
+    resources :messages do
+      patch :toggle_requires_action, on: :member
+    end
   end
 end

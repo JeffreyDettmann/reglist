@@ -1,0 +1,54 @@
+<% if @user_messages.present? %>
+<h1>Messages</h1>
+<div class="container row d-flex">
+  <div class="col-7 col-lg-9">
+    Sender
+  </div>
+  <div class="col-3 col-lg-2 d-flex justify-content-center">
+    Needs Action
+  </div>
+  <div class="col-2 col-lg-1 d-flex justify-content-center">
+    Unread
+  </div>
+</div>
+
+<% @user_messages.each do |email, counts|
+     email ||= 'anonymous' %>
+<div class="container row rounded border border-dark mb-2">
+  <div class="col-7 col-lg-9">
+    <%= link_to(email, admin_messages_url(user: email)) %>
+  </div>
+  <div class="col-3 col-lg-2 d-flex justify-content-center">
+    <%= counts[:requires_action] %>
+  </div>
+  <div class="col-2 col-lg-1 d-flex justify-content-center">
+    <%= counts[:unread] %>
+  </div>
+</div>
+<% end %>
+<% end %>
+<% if @messages.present? %>
+<h1>Conversation with <%= conversation_partner @messages.first %></h1>
+<% @messages.each do |message| %>
+<div class="row mb-3">
+  <div class="col-2 col-lg-1 fw-light fs-6"><%= message.created_at.to_fs(:day_month) %></div>
+<% if message_alignment(message) == 'left' %>
+  <div class="container rounded border border-dark col-9 col-md-8 bg-light <%= 'fw-bold' if unread(message) %>">
+    <%= message.body %>
+  </div>
+  <div class="col-1"><%== requires_action(message) %></div>
+  <% else %>
+  <div class="col-1">&nbsp;</div>
+  <div class="container rounded border border-dark col-9 col-md-8 bg-primary text-white <%= 'fw-bold' if unread(message) %>">
+    <%= message.body %>
+  </div>
+  <% end %>
+</div>
+<% end %>
+<%= form_with(model: @message) do |form| %>
+  <%= form.hidden_field :user_id %>
+  <p><%= form.text_area :body %></p>
+  <p><%= form.submit 'Send Message' %></p>
+<% end %>
+
+<% end %>
