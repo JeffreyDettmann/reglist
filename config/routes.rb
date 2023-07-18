@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     root to: 'tournaments#index'
     resources :tournaments do
       patch :update_status, on: :member
+      patch :toggle_request_publication, on: :member
     end
     resources :messages do
       patch :toggle_requires_action, on: :member

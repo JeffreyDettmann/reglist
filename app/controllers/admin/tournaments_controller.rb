@@ -7,11 +7,12 @@ module Admin
     before_action :set_tournament, only: %i[show edit update destroy update_status]
     before_action :new_tournament, only: :new
     before_action :check_authorization, only: %i[edit update destroy update_status]
-    before_action :check_can_publish, only: :update_status
+    before_action :check_may_publish, only: :update_status
+    before_action :check_if_may_request_publication, only: :toggle_request_publication
 
     def index
       status_filter = params[:status] || :submitted
-      @old_tournaments = @unapproved_tournaments = []
+      @old_tournaments = []
       if current_user.admin?
         if status_filter == 'published'
           @tournaments = Tournament.where(status: status_filter, registration_close: 0.days.ago..).order(:name)
@@ -20,8 +21,7 @@ module Admin
           @tournaments = Tournament.where(status: status_filter).order(:name)
         end
       else
-        @tournaments = current_user_tournaments(status_filter, true)
-        @unapproved_tournaments = current_user_tournaments(status_filter, false)
+        @tournaments = current_user_tournaments(status_filter)
       end
     end
 
@@ -79,6 +79,15 @@ module Admin
       end
     end
 
+    def toggle_request_publication
+      if @tournament.message
+        remove_message_from_tournament(@tournament)
+      else
+        add_message_to_tournament(@tournament)
+      end
+      redirect_to admin_tournaments_url(status: @tournament.status)
+    end
+
     private
 
     def new_tournament
@@ -99,13 +108,13 @@ module Admin
     end
 
     def check_authorization
-      return if current_user.admin? || current_user.tournaments.approved.include?(@tournament)
+      return if @tournament.owned_by(current_user)
 
       redirect_to admin_tournaments_url(status: @tournament.status),
                   alert: 'You are not authorized to update this tournament'
     end
 
-    def check_can_publish
+    def check_may_publish
       return if current_user.admin?
       return unless params[:status] == 'published'
 
@@ -113,12 +122,43 @@ module Admin
                   alert: 'You are not authorized to publish tournaments'
     end
 
-    def current_user_tournaments(status, approved)
+    def current_user_tournaments(status)
       Tournament.joins({ tournament_claims: :user })
                 .where(status:,
-                       'tournament_claims.approved' => approved,
                        users: [current_user])
                 .order(:name)
+    end
+
+    def check_if_may_request_publication
+      @tournament = Tournament.find(params[:id])
+
+      unless @tournament.owned_by(current_user)
+        return redirect_to(admin_tournaments_url(status: @tournament.status),
+                           alert: "You are not authorized to request publication for #{@tournament.name}")
+      end
+
+      return if @tournament.status == 'pending'
+
+      redirect_to(admin_tournaments_url(status: @tournament.status),
+                  alert: 'You may only request publication for pending tournaments')
+    end
+
+    def remove_message_from_tournament(tournament)
+      message = tournament.message
+      if tournament.update(message: nil) && message.destroy
+        flash[:notice] = "Successfully removed request of publication of #{tournament.name}."
+      else
+        flash[:alert] = "Removal of request for publication of #{tournament.name} failed."
+      end
+    end
+
+    def add_message_to_tournament(tournament)
+      message = Message.new(user: current_user, body: "Please publish #{tournament.name}", requires_action: true)
+      if tournament.update(message:)
+        flash[:notice] = "Request of publication of #{tournament.name} successful."
+      else
+        flash[:alert] = "Request of publication of #{tournament.name} failed."
+      end
     end
   end
 end

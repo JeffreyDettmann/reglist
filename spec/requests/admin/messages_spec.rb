@@ -99,6 +99,7 @@ RSpec.describe 'Admin::Messages', type: :request do
         create(:message, body: 'Read message', user: both_user, read: true, requires_action: true)
       end
     end
+
     context 'logged in as user' do
       before do
         user = create(:user, confirmed_at: 2.days.ago)

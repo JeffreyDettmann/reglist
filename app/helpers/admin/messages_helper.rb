@@ -4,6 +4,15 @@
 module Admin
   # helpers for message views
   module MessagesHelper
+    def add_links(message)
+      request_match = /\A(Please publish) (.+)/.match(message.body)
+      if request_match
+        "#{request_match[1]} #{link_to(request_match[2], admin_tournaments_path(status: :pending))}"
+      else
+        message.body
+      end
+    end
+
     def message_alignment(message)
       if current_user.admin?
         if message.from_admin?

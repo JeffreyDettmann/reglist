@@ -5,6 +5,7 @@
 class Tournament < ApplicationRecord
   enum status: %i[submitted ignored pending published]
 
+  belongs_to :message, optional: true
   has_many :tournament_claims
   has_many :users, through: :tournament_claims
 
@@ -13,6 +14,12 @@ class Tournament < ApplicationRecord
 
   before_validation :remove_whitespaces
   before_validation :hygienate_liquipedia_url
+
+  def owned_by(user)
+    return true if user.admin?
+
+    TournamentClaim.where(tournament: self, user:, approved: true).exists?
+  end
 
   private
 

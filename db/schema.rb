@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_16_164223) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_18_164208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -55,6 +55,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_16_164223) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "info_url"
+    t.bigint "message_id"
+    t.index ["message_id"], name: "index_tournaments_on_message_id"
     t.index ["name"], name: "index_tournaments_on_name"
     t.index ["registration_close"], name: "index_tournaments_on_registration_close"
     t.index ["start_date"], name: "index_tournaments_on_start_date"
@@ -83,4 +85,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_16_164223) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "tournaments", "messages"
 end

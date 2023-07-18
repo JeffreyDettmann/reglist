@@ -3,6 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe Admin::MessagesHelper, type: :helper do
+  describe 'add links' do
+    it 'ignores messages that do not match replacement pattern' do
+      body = 'Does not match pattern 27'
+      message = build(:message, body:)
+      expect(add_links(message)).to eq body
+    end
+
+    it 'Turns auto-generated request into link' do
+      body = 'Please publish My Cool Tournament'
+      new_body = 'Please publish <a href="/admin/tournaments?status=pending">My Cool Tournament</a>'
+      message = build(:message, body:)
+      expect(add_links(message)).to eq new_body
+    end
+  end
+
   describe 'message alignment' do
     let(:admin) { create(:user, admin: true) }
     let(:user) { create(:user, admin: false) }

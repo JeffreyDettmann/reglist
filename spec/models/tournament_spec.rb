@@ -89,4 +89,30 @@ RSpec.describe Tournament, type: :model do
     new_tournament.reload
     expect(new_tournament.name).to eq 'Cool tournament'
   end
+
+  describe 'owned_by' do
+    let(:admin) { create(:user, admin: true) }
+    let(:user) { create(:user, admin: false) }
+    let(:tournament) { create(:tournament, name: 'Tournament') }
+
+    it 'is owned by admin' do
+      assert tournament.owned_by(admin)
+    end
+
+    it 'is owned by confirmed user claim' do
+      tournament_claim = build(:tournament_claim, user:, approved: true)
+      tournament.update(tournament_claims: [tournament_claim])
+      assert tournament.owned_by(user)
+    end
+
+    it 'is not owned without user claim' do
+      assert !tournament.owned_by(user)
+    end
+
+    it 'is not owned with unconfirmed user claim' do
+      tournament_claim = build(:tournament_claim, user:, approved: false)
+      tournament.update(tournament_claims: [tournament_claim])
+      assert !tournament.owned_by(user)
+    end
+  end
 end

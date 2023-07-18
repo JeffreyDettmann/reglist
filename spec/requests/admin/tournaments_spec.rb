@@ -18,11 +18,10 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'when logged in as user' do
-      let(:tournament_counts) { { submitted: 3, pending: 4, ignored: 5, published: 6 } }
+      let(:tournament_counts) { { submitted: 5, pending: 6, ignored: 5, published: 7 } }
       before do
-        @user = create(:user, admin: false)
+        @user = create(:user, confirmed_at: 2.days.ago, admin: false)
         sign_in @user
-        @user.confirm
         load_tournaments
       end
 
@@ -30,8 +29,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         tnames = Set.new
         tournament_counts.map do |status, count|
           get admin_tournaments_path, params: { status: }
-          expect(assigns(:tournaments).size).to eq count
-          expect(assigns(:unapproved_tournaments).size).to eq 1
+          expect(assigns(:tournaments).size).to eq count + 1
           assigns(:tournaments).each do |tournament|
             expect(tournament.users).to include @user
             expect(tournament.status).to eq status.to_s
@@ -171,9 +169,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in as user' do
       before do
-        user = create(:user)
+        user = create(:user, confirmed_at: 2.days.ago)
         sign_in user
-        user.confirm
       end
 
       it 'succeeds if authenticated' do
@@ -241,12 +238,11 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'when logged in as user' do
+      let(:user) { create(:user, confirmed_at: 2.days.ago) }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
-      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [user]) }
       before do
-        @user = create(:user)
-        @user.confirm
-        sign_in @user
+        sign_in user
       end
 
       it 'fails if not owned' do
@@ -306,14 +302,13 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'when logged in as user' do
+      let(:user) { create(:user, confirmed_at: 2.days.ago) }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
-      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [user]) }
       let(:new_name) { 'New Name' }
       let(:valid_params) { { tournament: { name: new_name } } }
       before do
-        @user = create(:user)
-        @user.confirm
-        sign_in @user
+        sign_in user
       end
 
       it 'fails if not owned' do
@@ -345,9 +340,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in as user' do
       before do
-        @user = create(:user, admin: false)
+        @user = create(:user, confirmed_at: 2.days.ago, admin: false)
         sign_in @user
-        @user.confirm
       end
 
       context 'working with own tournament' do
@@ -435,6 +429,79 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       it 'redirects to tournaments page of previous status' do
         patch update_status_admin_tournament_path(submitted), params: { status: :pending }
         expect(response).to redirect_to(admin_tournaments_url(status: submitted.status))
+      end
+    end
+  end
+
+  describe 'PATCH /:id/toggle_request_publication' do
+    it 'fails if not authenticated' do
+      patch toggle_request_publication_admin_tournament_path(10)
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
+    context 'logged in as user' do
+      let(:user) { create(:user, confirmed_at: 2.days.ago) }
+      let(:tournament_claims) { [build(:tournament_claim, user:, approved: true)] }
+      let(:pending_tournament) { create(:tournament, name: 'Pending', tournament_claims:, status: :pending) }
+      let(:submitted_tournament) { create(:tournament, name: 'Submitted', tournament_claims:, status: :submitted) }
+      let(:ignored_tournament) { create(:tournament, name: 'Ignored', tournament_claims:, status: :ignored) }
+      let(:published_tournament) { create(:tournament, name: 'Published', tournament_claims:, status: :published) }
+      let(:requires_action_message) { create(:message, body: 'Publish please', user:, requires_action: true) }
+      let(:unowned_tournament) { create(:tournament, name: 'Unowned', status: :pending) }
+      let(:requires_action_tournament) do
+        create(:tournament,
+               name: 'Requires Action',
+               tournament_claims:,
+               message: requires_action_message,
+               status: :pending)
+      end
+      before do
+        sign_in user
+      end
+
+      it 'adds action_required message when tournament does not have publication request' do
+        expect do
+          patch toggle_request_publication_admin_tournament_path(pending_tournament)
+        end.to change(Message, :count).by 1
+        expect(response).to redirect_to(admin_tournaments_url(status: pending_tournament.status))
+        expect(pending_tournament.reload.message).to_not be_nil
+        assert pending_tournament.message.requires_action?
+      end
+
+      it 'removes when tournament has publication request' do
+        expect(requires_action_tournament.message).to_not be_nil
+        expect do
+          patch toggle_request_publication_admin_tournament_path(requires_action_tournament)
+        end.to change(Message, :count).by(-1)
+        expect(requires_action_tournament.reload.message).to be_nil
+      end
+
+      it 'fails when tournament not owned by user' do
+        expect do
+          patch toggle_request_publication_admin_tournament_path(unowned_tournament)
+        end.to change(Message, :count).by(0)
+        expect(flash[:alert]).to_not be_nil
+      end
+
+      it 'fails when tournament status submitted' do
+        expect do
+          patch toggle_request_publication_admin_tournament_path(submitted_tournament)
+        end.to change(Message, :count).by(0)
+        expect(flash[:alert]).to_not be_nil
+      end
+
+      it 'fails when tournament status ignored' do
+        expect do
+          patch toggle_request_publication_admin_tournament_path(ignored_tournament)
+        end.to change(Message, :count).by(0)
+        expect(flash[:alert]).to_not be_nil
+      end
+
+      it 'fails when tournament status published' do
+        expect do
+          patch toggle_request_publication_admin_tournament_path(published_tournament)
+        end.to change(Message, :count).by(0)
+        expect(flash[:alert]).to_not be_nil
       end
     end
   end

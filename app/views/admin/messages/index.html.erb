@@ -34,7 +34,7 @@
   <div class="col-2 col-lg-1 fw-light fs-6"><%= message.created_at.to_fs(:day_month) %></div>
 <% if message_alignment(message) == 'left' %>
   <div class="container rounded border border-dark col-9 col-md-8 bg-light <%= 'fw-bold' if unread(message) %>">
-    <%= message.body %>
+    <%== add_links(message) %>
   </div>
   <div class="col-1"><%== requires_action(message) %></div>
   <% else %>
