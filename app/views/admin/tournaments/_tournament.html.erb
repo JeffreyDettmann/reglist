@@ -32,6 +32,11 @@
         <%= button_to("Request Publish", toggle_request_publication_admin_tournament_path(tournament), method: :patch) unless ['ignored', 'published'].include?(tournament.status) %>
       <% end %>
     </div>
+    <% if current_user.admin? && tournament.flags.present?
+         tournament.flags.split(':').each do |flag| %>
+          <div class="col-1"><%= button_to(flag, remove_flag_admin_tournament_path(tournament), method: :patch, params: { flag: }) %></div>
+    <% end end %>
+
     <div class="col-sm">
       <%= link_to('Edit', edit_admin_tournament_path(tournament)) if ['pending', 'published'].include?(tournament.status) %>
     </div>

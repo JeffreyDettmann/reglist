@@ -146,7 +146,7 @@ RSpec.describe 'Admin::Messages', type: :request do
     let(:requires_action) { create(:message, body: 'Requires action', requires_action: true, user:) }
     let(:not_requires_action) { create(:message, body: 'Does not require action', requires_action: false) }
     it 'fails if not authenticated' do
-      get admin_messages_path
+      patch toggle_requires_action_admin_message_path(requires_action)
       expect(response).to redirect_to(new_user_session_path)
     end
 

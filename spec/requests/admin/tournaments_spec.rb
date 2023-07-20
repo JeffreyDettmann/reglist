@@ -453,6 +453,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
                name: 'Requires Action',
                tournament_claims:,
                message: requires_action_message,
+               plus_flags: 'publish request',
                status: :pending)
       end
       before do
@@ -468,12 +469,24 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         assert pending_tournament.message.requires_action?
       end
 
-      it 'removes when tournament has publication request' do
+      it 'adds action_required message when tournament does not have publication request' do
+        assert !pending_tournament.flag?('publish request')
+        patch toggle_request_publication_admin_tournament_path(pending_tournament)
+        assert pending_tournament.reload.flag?('publish request')
+      end
+
+      it 'removes action_required message when tournament has publication request' do
         expect(requires_action_tournament.message).to_not be_nil
         expect do
           patch toggle_request_publication_admin_tournament_path(requires_action_tournament)
         end.to change(Message, :count).by(-1)
         expect(requires_action_tournament.reload.message).to be_nil
+      end
+
+      it 'removes flag when message when tournament has publication request' do
+        assert requires_action_tournament.flag?('publish request')
+        patch toggle_request_publication_admin_tournament_path(requires_action_tournament)
+        assert !requires_action_tournament.reload.flag?('publish request')
       end
 
       it 'fails when tournament not owned by user' do
@@ -502,6 +515,42 @@ RSpec.describe 'Admin::Tournaments', type: :request do
           patch toggle_request_publication_admin_tournament_path(published_tournament)
         end.to change(Message, :count).by(0)
         expect(flash[:alert]).to_not be_nil
+      end
+    end
+  end
+
+  describe 'PATCH /:id/remove_flag' do
+    let(:user) { create(:user, confirmed_at: 2.days.ago) }
+    let(:requires_action) { create(:tournament, name: 'Requires action', plus_flags: %w[foo bar]) }
+
+    it 'fails if not authenticated' do
+      patch remove_flag_admin_tournament_path(requires_action), params: { flag: :foo }
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
+    context 'logged in as admin' do
+      before do
+        admin = create(:user, confirmed_at: 2.days.ago, admin: true, email: 'admin@example.com')
+        sign_in admin
+      end
+
+      it 'removes foo flag but not bar flag' do
+        patch remove_flag_admin_tournament_path(requires_action), params: { flag: :foo }
+        expect(response).to redirect_to(admin_tournaments_url(status: requires_action.status))
+        requires_action.reload
+        assert !requires_action.flag?('foo')
+        assert requires_action.flag?('bar')
+      end
+    end
+    context 'logged in as user' do
+      before do
+        sign_in user
+      end
+
+      it 'fails' do
+        patch remove_flag_admin_tournament_path(requires_action), params: { flag: :foo }
+        expect(response).to redirect_to(admin_tournaments_url(status: requires_action.status))
+        expect(flash[:alert]).to eq 'You are not authorized to remove flags'
       end
     end
   end

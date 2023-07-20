@@ -21,6 +21,33 @@ class Tournament < ApplicationRecord
     TournamentClaim.where(tournament: self, user:, approved: true).exists?
   end
 
+  # Array of flags to add
+  def plus_flags(flags_to_add)
+    flags_to_add = [flags_to_add] if flags_to_add.is_a?(String)
+    old_flags = flags&.split(':') || []
+    old_flags += flags_to_add
+    self.flags = old_flags.join(':')
+  end
+
+  alias plus_flags= plus_flags
+
+  # Array of flags to remove
+  def minus_flags(flags_to_remove)
+    return unless flags.present?
+
+    flags_to_remove = [flags_to_remove] if flags_to_remove.is_a?(String)
+    old_flags = flags.split(':')
+    old_flags -= flags_to_remove
+    self.flags = old_flags.join(':')
+  end
+
+  alias minus_flags= minus_flags
+
+  # Check if has flag
+  def flag?(flag)
+    (flags || '').split(':').include? flag
+  end
+
   private
 
   def hygienate_liquipedia_url

@@ -4,8 +4,8 @@
 module Admin
   # Manages vetting and publication of Tournaments
   class TournamentsController < AdminController
-    before_action :set_tournament, only: %i[show edit update destroy update_status]
-    before_action :new_tournament, only: :new
+    before_action :set_tournament, except: %i[index new create]
+    before_action :new_tournament, only: %i[new create]
     before_action :check_authorization, only: %i[edit update destroy update_status]
     before_action :check_may_publish, only: :update_status
     before_action :check_if_may_request_publication, only: :toggle_request_publication
@@ -26,7 +26,6 @@ module Admin
     end
 
     def create
-      @tournament = Tournament.new
       @tournament.assign_attributes(tournament_params)
       if current_user.admin?
         @tournament.status = :pending
@@ -88,6 +87,16 @@ module Admin
       redirect_to admin_tournaments_url(status: @tournament.status)
     end
 
+    def remove_flag
+      if current_user.admin?
+        @tournament.update(minus_flags: params[:flag])
+      else
+        flash[:alert] = 'You are not authorized to remove flags'
+      end
+
+      redirect_to(admin_tournaments_url(status: @tournament.status))
+    end
+
     private
 
     def new_tournament
@@ -130,8 +139,6 @@ module Admin
     end
 
     def check_if_may_request_publication
-      @tournament = Tournament.find(params[:id])
-
       unless @tournament.owned_by(current_user)
         return redirect_to(admin_tournaments_url(status: @tournament.status),
                            alert: "You are not authorized to request publication for #{@tournament.name}")
@@ -145,7 +152,7 @@ module Admin
 
     def remove_message_from_tournament(tournament)
       message = tournament.message
-      if tournament.update(message: nil) && message.destroy
+      if tournament.update(message: nil, minus_flags: 'publish request') && message.destroy
         flash[:notice] = "Successfully removed request of publication of #{tournament.name}."
       else
         flash[:alert] = "Removal of request for publication of #{tournament.name} failed."
@@ -154,7 +161,7 @@ module Admin
 
     def add_message_to_tournament(tournament)
       message = Message.new(user: current_user, body: "Please publish #{tournament.name}", requires_action: true)
-      if tournament.update(message:)
+      if tournament.update(plus_flags: 'publish request', message:)
         flash[:notice] = "Request of publication of #{tournament.name} successful."
       else
         flash[:alert] = "Request of publication of #{tournament.name} failed."

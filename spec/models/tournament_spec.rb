@@ -115,4 +115,43 @@ RSpec.describe Tournament, type: :model do
       assert !tournament.owned_by(user)
     end
   end
+
+  describe 'flags' do
+    it 'adds new flags' do
+      tournament = build(:tournament, plus_flags: %i[jim bob])
+      expect(tournament.flags).to_not be_nil
+      assert tournament.flag?('jim')
+      assert tournament.flag?('bob')
+    end
+
+    it 'adds new flag' do
+      tournament = build(:tournament, plus_flags: 'bob')
+      expect(tournament.flags).to_not be_nil
+      assert tournament.flag?('bob')
+    end
+
+    it 'adds to existing flag' do
+      tournament = build(:tournament, plus_flags: 'bob')
+      tournament.plus_flags = 'jim'
+      assert tournament.flag?('jim')
+      assert tournament.flag?('bob')
+      assert !tournament.flag?('tim')
+    end
+
+    it 'removes correct flag' do
+      tournament = build(:tournament, plus_flags: %i[jim bob tim])
+      tournament.minus_flags('tim')
+      assert tournament.flag?('jim')
+      assert tournament.flag?('bob')
+      assert !tournament.flag?('tim')
+    end
+
+    it 'removes correct flags' do
+      tournament = build(:tournament, plus_flags: %i[jim bob tim])
+      tournament.minus_flags(%w[jim tim])
+      assert !tournament.flag?('jim')
+      assert tournament.flag?('bob')
+      assert !tournament.flag?('tim')
+    end
+  end
 end
