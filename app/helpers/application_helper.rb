@@ -4,6 +4,8 @@ module ApplicationHelper
   def maybe_link_name(tournament)
     if tournament.info_url.present?
       link_to(tournament.name, tournament.info_url)
+    elsif tournament.liquipedia_url.present?
+      link_to(tournament.name, "https://liquipedia.net#{tournament.liquipedia_url}")
     else
       tournament.name
     end
@@ -12,7 +14,7 @@ module ApplicationHelper
   def divided_content(content)
     content&.gsub("\n", '<br/>')
   end
-  
+
   def class_for_tournament(tournament)
     if tournament.game == 'Age of Mythology'
       'aom'
