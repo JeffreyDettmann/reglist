@@ -11,6 +11,7 @@ class Tournament < ApplicationRecord
 
   validates :liquipedia_url, uniqueness: true, allow_nil: true, format: { with: %r{\A/ageofempires/} }
   validates :name, uniqueness: true, presence: true
+  validate :cannot_publish_without_registration_close
 
   before_validation :remove_whitespaces
   before_validation :hygienate_liquipedia_url
@@ -49,6 +50,12 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def cannot_publish_without_registration_close
+    return unless status == 'published' && registration_close.blank?
+
+    errors.add(:status, "can't by published if no registration close")
+  end
 
   def hygienate_liquipedia_url
     self.liquipedia_url = nil unless liquipedia_url.present?

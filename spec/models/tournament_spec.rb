@@ -3,15 +3,26 @@
 require 'rails_helper'
 
 RSpec.describe Tournament, type: :model do
-  it 'works with valid status' do
-    %i[submitted ignored pending published].each do |status|
-      tournament = build(:tournament, name: 'New', status:)
+  describe 'status' do
+    it 'works with valid status' do
+      tournament = build(:tournament, name: 'New')
+      %i[submitted ignored pending].each do |status|
+        tournament.status = status
+        assert tournament.valid?
+      end
+      tournament.registration_close = 1.day.ago
+      tournament.status = :published
       assert tournament.valid?
     end
-  end
 
-  it 'does not work with invalid status' do
-    expect { build(:tournament, name: 'New', status: :invalid_status) }.to raise_error(ArgumentError)
+    it 'does not work with invalid status' do
+      expect { build(:tournament, name: 'New', status: :invalid_status) }.to raise_error(ArgumentError)
+    end
+
+    it 'does not publish if no registration close' do
+      tournament = build(:tournament, name: 'New', status: :published)
+      assert !tournament.valid?
+    end
   end
 
   it 'guarantees uniqueness of liquipedia_url' do

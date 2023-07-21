@@ -27,7 +27,6 @@ RSpec.describe 'Opportunities', type: :request do
                           registration_close: 1.day.ago)
       create(:tournament, name: 'not published, future registration close', status: :pending,
                           registration_close: 1.day.from_now)
-      create(:tournament, name: 'published, no registration close', status: :published)
       create(:tournament, name: 'published, past registration close', status: :published,
                           registration_close: 1.day.ago)
       create(:tournament, name: 'published, future registration close', status: :published,

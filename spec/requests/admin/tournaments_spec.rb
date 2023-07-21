@@ -445,7 +445,10 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       let(:pending_tournament) { create(:tournament, name: 'Pending', tournament_claims:, status: :pending) }
       let(:submitted_tournament) { create(:tournament, name: 'Submitted', tournament_claims:, status: :submitted) }
       let(:ignored_tournament) { create(:tournament, name: 'Ignored', tournament_claims:, status: :ignored) }
-      let(:published_tournament) { create(:tournament, name: 'Published', tournament_claims:, status: :published) }
+      let(:published_tournament) do
+        create(:tournament, name: 'Published', tournament_claims:, status: :published,
+                            registration_close: 1.day.from_now)
+      end
       let(:requires_action_message) { create(:message, body: 'Publish please', user:, requires_action: true) }
       let(:unowned_tournament) { create(:tournament, name: 'Unowned', status: :pending) }
       let(:requires_action_tournament) do
