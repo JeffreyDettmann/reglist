@@ -18,7 +18,7 @@ class MessagesController < ApplicationController
     end
     respond_to do |format|
       if @message.save
-        format.html { redirect_to redirect, notice: 'Thank you for the comment!' }
+        format.html { redirect_to redirect, notice: t(:thanks_for_comment) }
         format.json { render :show, status: :created, location: @message }
       else
         format.html { render :new, status: :unprocessable_entity }

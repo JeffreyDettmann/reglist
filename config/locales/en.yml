@@ -1,33 +1,56 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   "true": "foo"
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
 en:
-  hello: "Hello world"
+  accept: "Accept"
+  contact_us: "Send us a message!"
+  conversation_with: "Conversation with"
+  deadline: "Deadline"
+  edit: "Edit"
+  forgot_your_password: "Forgot your password?"
+  format: "Format"
+  from_anonymous: "From Anonymous"
+  game: "Game"
+  have_something_to_tell_us: "Have something to tell us?"
+  home_page: "Home"
+  ignore: "Ignore"
+  links: "Links"
+  manage_tournaments: "Manage Tournaments"
+  mark_done: "mark done"
+  mark_todo: "mark todo"
+  messages: "Messages"
+  name: "Name"
+  needs_action: "Needs Action"
+  new_tournament: "New"
+  not_authorized: "You are not authorized to do this"
+  not_receive_confirmation_instructions: "Didn't receive confirmation instructions?"
+  not_receive_unlock_instructions: "Didn't receive unlock instructions?"
+  notes: "Notes"
+  organizers: "Organizers"
+  past_tournaments: "Past Tournaments"
+  pending: "Pending"
+  please_update_password: "Please update your password"
+  publish: "Publish"
+  published: "Published"
+  register: "register"
+  registration: registration
+  registration_opportunities: "Tournament Registration Opportunities"
+  restrictions: "Restrictions"
+  rules: "rules"
+  send_message: "Send Message"
+  sender: "Sender"
+  sign_in: "Log In"
+  sign_in_with: "Sign in with {{provider}}"
+  sign_out: "Sign Out"
+  sign_up: "Sign up"
+  site_admin: "Site Admin"
+  submitted: "Submitted"
+  thanks_for_comment: "Thank you for the comment!"
+  tier: "Tier"
+  tournament_created: "Tournament successfully created"
+  tournament_dates: "Tournament Dates"
+  tournament_updated: "{{name}} succesfully updated"
+  unread: "Unread"
+  date:
+    formats:
+      day_month: "%-d %B"
+  time:
+    formats:
+      day_month: "%-d %B"

@@ -14,6 +14,9 @@ module Reglist
     config.load_defaults 7.0
     # Configuration for the application, engines, and railties goes here.
     #
+    config.i18n.available_locales = %w(en fr)
+    config.i18n.default_locale = :fr
+
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #

@@ -33,16 +33,21 @@ module Admin
 
     def conversation_partner(message)
       if current_user.admin?
-        message.user&.email || 'anonymous'
+        if message.user&.email
+          "#{t :conversation_with} #{message.user.email}"
+        else
+          t(:from_anonymous)
+        end
       else
-        'Site Admin'
+        "#{t :conversation_with} #{t :site_admin}"
       end
     end
 
     def requires_action(message)
       if current_user.admin?
         button_text = message.requires_action? ? '&#x2757;' : '&#x2705;'
-        button_to(raw(button_text), toggle_requires_action_admin_message_path(message), method: :patch)
+        title = message.requires_action? ? t(:mark_done) : t(:mark_todo)
+        button_to(raw(button_text), toggle_requires_action_admin_message_path(message), method: :patch, title:)
       else
         '&nbsp;'
       end

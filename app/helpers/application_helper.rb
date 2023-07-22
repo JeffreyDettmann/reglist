@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  def l_handle_nil(obj, options)
+    return nil if obj.nil?
+
+    l(obj, options)
+  end
+
+  def ldate(dt, format)
+    dt ? l(dt, format:) : nil
+  end
+
   def maybe_link_name(tournament)
     if tournament.info_url.present?
       link_to(tournament.name, tournament.info_url)

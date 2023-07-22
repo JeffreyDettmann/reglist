@@ -11,21 +11,21 @@
       <%= link_to("liquipedia", "https://liquipedia.net#{tournament.liquipedia_url}") if tournament.liquipedia_url.present? %>
     </div>
     <div class="col-1">
-      <%= link_to("rules", "#{tournament.rules_url}") if tournament.rules_url.present? %>
+      <%= link_to(t(:rules), "#{tournament.rules_url}") if tournament.rules_url.present? %>
     </div>
     <div class="col-1">
-      <%= link_to("registration", "#{tournament.registration_url}") if tournament.registration_url.present? %>
+      <%= link_to(t(:registration), "#{tournament.registration_url}") if tournament.registration_url.present? %>
     </div>
     <% if tournament.owned_by(current_user) %>
     <div class="col-1">
-      <%= button_to("Accept", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :pending }) if ['submitted', 'ignored'].include?(tournament.status)%>
+      <%= button_to(t(:accept), update_status_admin_tournament_path(tournament), method: :patch, params: { status: :pending }) if ['submitted', 'ignored'].include?(tournament.status)%>
     </div>
     <div class="col-1">
-      <%= button_to("Ignore", update_status_admin_tournament_path(tournament), method: :patch, params: { status: :ignored }) unless tournament.status == 'ignored' %>
+      <%= button_to(t(:ignore), update_status_admin_tournament_path(tournament), method: :patch, params: { status: :ignored }) unless tournament.status == 'ignored' %>
     </div>
     <div class="col-1">
       <% if current_user.admin? %>
-        <%= button_to("Publish", update_status_admin_tournament_path(tournament),
+        <%= button_to(t(:publish), update_status_admin_tournament_path(tournament),
             disabled: tournament.registration_close.blank?,
             title: tournament.registration_close.blank? ? 'Needs registration_close' : '',
             method: :patch, params: { status: :published }) unless ['ignored', 'published'].include?(tournament.status) %>
@@ -41,7 +41,7 @@
     <% end end %>
 
     <div class="col-sm">
-      <%= link_to('Edit', edit_admin_tournament_path(tournament)) if ['pending', 'published'].include?(tournament.status) %>
+      <%= link_to(t(:edit), edit_admin_tournament_path(tournament)) if ['pending', 'published'].include?(tournament.status) %>
     </div>
     <% end %>
   </div>

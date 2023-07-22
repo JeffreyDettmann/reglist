@@ -36,7 +36,7 @@ module Admin
 
       respond_to do |format|
         if @tournament.save
-          format.html { redirect_to admin_tournaments_url, notice: 'Tournament successfully created.' }
+          format.html { redirect_to admin_tournaments_url, notice: t(:tournament_created) }
           format.json { render :show, status: :created, location: @tournament }
         else
           format.html { render :new, status: :unprocessable_entity }
@@ -50,7 +50,7 @@ module Admin
         if @tournament.update(tournament_params)
           format.html do
             redirect_to admin_tournaments_url(status: @tournament.status),
-                        notice: "#{@tournament.name} was successfully updated."
+                        notice: t(:tournament_updated, name: @tournament.name)
           end
           format.json { render :show, status: :ok, location: @tournament }
         else
@@ -67,7 +67,7 @@ module Admin
         if status_valid && @tournament.update(status: params[:status])
           format.html do
             redirect_to admin_tournaments_url(status: old_status),
-                        notice: "#{@tournament.name} was successfully updated."
+                        notice: t(:tournament_updated, name: @tournament.name)
           end
           format.json { render :show, status: :ok, location: @tournament }
         else
@@ -91,7 +91,7 @@ module Admin
       if current_user.admin?
         @tournament.update(minus_flags: params[:flag])
       else
-        flash[:alert] = 'You are not authorized to remove flags'
+        flash[:alert] = t(:not_authorized)
       end
 
       redirect_to(admin_tournaments_url(status: @tournament.status))
@@ -120,7 +120,7 @@ module Admin
       return if @tournament.owned_by(current_user)
 
       redirect_to admin_tournaments_url(status: @tournament.status),
-                  alert: 'You are not authorized to update this tournament'
+                  alert: t(:not_authorized)
     end
 
     def check_may_publish
@@ -141,13 +141,13 @@ module Admin
     def check_if_may_request_publication
       unless @tournament.owned_by(current_user)
         return redirect_to(admin_tournaments_url(status: @tournament.status),
-                           alert: "You are not authorized to request publication for #{@tournament.name}")
+                           alert: t(:not_authorized))
       end
 
       return if @tournament.status == 'pending'
 
       redirect_to(admin_tournaments_url(status: @tournament.status),
-                  alert: 'You may only request publication for pending tournaments')
+                  alert: t(:not_authorized))
     end
 
     def remove_message_from_tournament(tournament)

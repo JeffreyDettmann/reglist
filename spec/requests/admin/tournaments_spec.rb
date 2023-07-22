@@ -381,7 +381,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
         it 'redirects and does not update' do
           patch update_status_admin_tournament_path(submitted), params: { status: :pending }
-          expect(flash[:alert]).to eq 'You are not authorized to update this tournament'
+          expect(flash[:alert]).to eq I18n.t(:not_authorized)
           submitted.reload
           expect(submitted.status).to eq 'submitted'
           expect(response).to redirect_to(admin_tournaments_url(status: submitted.status))
@@ -397,7 +397,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
         it 'redirects and does not update' do
           patch update_status_admin_tournament_path(@submitted), params: { status: :pending }
-          expect(flash[:alert]).to eq 'You are not authorized to update this tournament'
+          expect(flash[:alert]).to eq I18n.t(:not_authorized)
           @submitted.reload
           expect(@submitted.status).to eq 'submitted'
           expect(response).to redirect_to(admin_tournaments_url(status: @submitted.status))
@@ -553,7 +553,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       it 'fails' do
         patch remove_flag_admin_tournament_path(requires_action), params: { flag: :foo }
         expect(response).to redirect_to(admin_tournaments_url(status: requires_action.status))
-        expect(flash[:alert]).to eq 'You are not authorized to remove flags'
+        expect(flash[:alert]).to eq I18n.t(:not_authorized)
       end
     end
   end

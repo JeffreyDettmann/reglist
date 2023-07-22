@@ -1,14 +1,14 @@
-<%= button_to("New", new_admin_tournament_path, method: :get) %>
+<%= button_to(t(:new_tournament), new_admin_tournament_path, method: :get) %>
 <nav class="navbar">
   <div class="container-fluid">
 	<div class="navbar-nav ms-auto">
-	  <%= link_to 'Submitted', admin_tournaments_path(status: :submitted) %>
+	  <%= link_to t(:submitted), admin_tournaments_path(status: :submitted) %>
 	</div>
 	<div class="navbar-nav ms-auto">
-	  <%= link_to 'Pending', admin_tournaments_path(status: :pending) %>
+	  <%= link_to t(:pending), admin_tournaments_path(status: :pending) %>
 	</div>
 	<div class="navbar-nav ms-auto">
-	  <%= link_to 'Published', admin_tournaments_path(status: :published) %>
+	  <%= link_to t(:published), admin_tournaments_path(status: :published) %>
 	</div>
   </div>
 </nav>
@@ -16,7 +16,7 @@
 <%= render tournament %>
 <% end %>
 <% if @old_tournaments.present? %>
-<h2>Past Tournaments</h2>
+<h2><%= t :past_tournaments %></h2>
 <% @old_tournaments.each do |tournament| %>
 <%= render tournament %>
 <% end

@@ -24,7 +24,7 @@ module Admin
         redirect_to admin_messages_url(user: message.user&.email || 'anonymous')
       else
         redirect_to admin_messages_url,
-                    alert: 'You are not authorized to update this message'
+                    alert: t(:not_authorized)
       end
     end
 

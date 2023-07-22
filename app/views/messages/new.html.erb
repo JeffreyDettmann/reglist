@@ -1,5 +1,5 @@
-<h2>Message for Site Administrators</h2>
+<h1><%= t(:contact) %></h1>
 <%= form_with(model: @message) do |form| %>
 <p><%= form.text_area :body %></p>
-<p><%= form.submit 'Send Message' %></p>
+<p><%= form.submit t(:send_message) %></p>
 <% end %>

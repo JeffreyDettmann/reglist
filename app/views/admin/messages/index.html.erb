@@ -1,14 +1,14 @@
 <% if @user_messages.present? %>
-<h1>Messages</h1>
+<h1><%= t(:messages) %></h1>
 <div class="container row d-flex">
   <div class="col-7 col-lg-9">
-    Sender
+    <%= t(:sender) %>
   </div>
   <div class="col-3 col-lg-2 d-flex justify-content-center">
-    Needs Action
+    <%= t(:needs_action) %>
   </div>
   <div class="col-2 col-lg-1 d-flex justify-content-center">
-    Unread
+    <%= t(:unread) %>
   </div>
 </div>
 
@@ -28,7 +28,7 @@
 <% end %>
 <% end %>
 <% if @messages.present? %>
-<h1>Conversation with <%= conversation_partner @messages.first %></h1>
+<h1><%= conversation_partner @messages.first %></h1>
 <% @messages.each do |message| %>
 <div class="row mb-3">
   <div class="col-2 col-lg-1 fw-light fs-6"><%= message.created_at.to_fs(:day_month) %></div>
@@ -45,10 +45,12 @@
   <% end %>
 </div>
 <% end %>
+<% if @messages.first.user %>
 <%= form_with(model: @message) do |form| %>
   <%= form.hidden_field :user_id %>
   <p><%= form.text_area :body %></p>
-  <p><%= form.submit 'Send Message' %></p>
+  <p><%= form.submit t(:send_message) %></p>
+<% end %>
 <% end %>
 
 <% end %>

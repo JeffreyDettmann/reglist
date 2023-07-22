@@ -7,13 +7,13 @@
 	  <%= maybe_link_name(tournament) %>
 	</div>
 	<div class="col-12 col-lg-1">
-	  <span class="d-lg-none">Registration closes <%= tournament.registration_close&.to_fs(:day_month) %></span> <span class="d-none d-lg-inline"><%= tournament.registration_close&.to_fs(:short) %></span>
+	  <span class="d-lg-none"><%= t(:deadline) %> <%= ldate tournament.registration_close, :day_month %></span> <span class="d-none d-lg-inline"><%= ldate tournament.registration_close, :short %></span>
 	</div>
 	<div class="col-12 col-lg-1">
-	  <%= link_to("rules", "#{tournament.rules_url}") if tournament.rules_url.present? %>
+	  <%= link_to(t(:rules), "#{tournament.rules_url}") if tournament.rules_url.present? %>
 	</div>
 	<div class="col-12 col-lg-1">
-	  <%= link_to("register", "#{tournament.registration_url}") if tournament.registration_url.present? %>
+	  <%= link_to(t(:register), "#{tournament.registration_url}") if tournament.registration_url.present? %>
 	</div>
 	<div class="col-12 col-lg-3">
 	  <%== divided_content(tournament.restrictions) %>
@@ -24,16 +24,16 @@
   </div>
   <div class="row collapse" id="moreInfo<%= tournament.id %>">
 	<div class="col-12 col-lg-3">
-	  Tournament Dates: <%= "#{tournament.start_date&.to_fs(:short)} - #{tournament.end_date&.to_fs(:short)}" %>
+	  <%= t(:tournament_dates) %>: <%= "#{ldate tournament.start_date, :short} - #{ldate tournament.end_date, :short}" %>
 	</div>
 	<div class="col-12 col-lg-2">
-	  Tier: <%= tournament.tier %> <%= "(#{tournament.prize_pool})" if tournament.prize_pool.present? %>
+	  <%= t(:tier) %>: <%= tournament.tier %> <%= "(#{tournament.prize_pool})" if tournament.prize_pool.present? %>
 	</div>
 	<div class="col-12 col-lg-2">
-	  Format: <%= tournament.format %>
+	  <%= t(:format) %>: <%= tournament.format %>
 	</div>
 	<div class="col-12 col-lg-4">
-	  Organizers: <%= tournament.organizers %>
+	  <%= t :organizers %>: <%= tournament.organizers %>
 	</div>
   </div>
   <div>

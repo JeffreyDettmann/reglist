@@ -50,6 +50,11 @@ gem 'cssbundling-rails'
 # esbuild
 gem 'jsbundling-rails'
 
+# localization
+gem 'devise-i18n'
+gem 'http_accept_language'
+gem 'rails-i18n', '~> 7.0.0'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 

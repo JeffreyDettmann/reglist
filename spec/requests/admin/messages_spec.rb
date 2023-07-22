@@ -168,6 +168,7 @@ RSpec.describe 'Admin::Messages', type: :request do
         assert not_requires_action.reload.requires_action
       end
     end
+
     context 'logged in as user' do
       before do
         sign_in user
@@ -176,7 +177,7 @@ RSpec.describe 'Admin::Messages', type: :request do
       it 'fails' do
         patch toggle_requires_action_admin_message_path(requires_action)
         expect(response).to redirect_to(admin_messages_url)
-        expect(flash[:alert]).to eq 'You are not authorized to update this message'
+        expect(flash[:alert]).to eq I18n.t(:not_authorized)
       end
     end
   end
