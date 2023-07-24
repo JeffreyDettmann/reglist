@@ -121,9 +121,30 @@ RSpec.describe Tournament, type: :model do
     end
 
     it 'is not owned with unconfirmed user claim' do
-      tournament_claim = build(:tournament_claim, user:, approved: false)
+      tournament_claim = build(:tournament_claim, user:, approved: false, reasoning: :reasoning)
       tournament.update(tournament_claims: [tournament_claim])
       assert !tournament.owned_by(user)
+    end
+  end
+
+  describe 'wating_claim_by' do
+    let(:user) { create(:user, admin: false) }
+    let(:tournament) { create(:tournament, name: 'Tournament') }
+
+    it 'is not waiting if confirmed user claim' do
+      tournament_claim = build(:tournament_claim, user:, approved: true)
+      tournament.update(tournament_claims: [tournament_claim])
+      assert !tournament.waiting_claim_by(user)
+    end
+
+    it 'is not waiting no user claim' do
+      assert !tournament.waiting_claim_by(user)
+    end
+
+    it 'is waiting with unapproved claim' do
+      tournament_claim = build(:tournament_claim, user:, approved: false, reasoning: :reasoning)
+      tournament.update(tournament_claims: [tournament_claim])
+      assert tournament.waiting_claim_by(user)
     end
   end
 

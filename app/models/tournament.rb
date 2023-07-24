@@ -22,6 +22,10 @@ class Tournament < ApplicationRecord
     TournamentClaim.where(tournament: self, user:, approved: true).exists?
   end
 
+  def waiting_claim_by(user)
+    TournamentClaim.where(tournament: self, user:, approved: false).exists?
+  end
+
   # Array of flags to add
   def plus_flags(flags_to_add)
     flags_to_add = [flags_to_add] if flags_to_add.is_a?(String)

@@ -1,5 +1,7 @@
 en:
   accept: "Accept"
+  claim: "Claim"
+  claim_tournament: "Claim %{tournament}"
   contact_us: "Send us a message!"
   conversation_with: "Conversation with"
   deadline: "Deadline"
@@ -44,6 +46,7 @@ en:
   submitted: "Submitted"
   thanks_for_comment: "Thank you for the comment!"
   tier: "Tier"
+  tournament_claimed: "Tournament successfully claimed"
   tournament_created: "Tournament successfully created"
   tournament_dates: "Tournament Dates"
   tournament_updated: "{{name}} succesfully updated"

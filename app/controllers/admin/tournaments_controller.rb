@@ -132,9 +132,7 @@ module Admin
     end
 
     def current_user_tournaments(status)
-      Tournament.joins({ tournament_claims: :user })
-                .where(status:,
-                       users: [current_user])
+      Tournament.where(status:)
                 .order(:name)
     end
 

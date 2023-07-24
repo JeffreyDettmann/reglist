@@ -7,18 +7,32 @@ RSpec.describe TournamentClaim, type: :model do
     @user = create(:user, admin: false)
   end
 
-  it 'automagically exists when tournament created with user' do
-    expect do
-      create(:tournament, users: [@user], name: 'foo')
-    end.to change(TournamentClaim, :count).by(1)
-  end
-
   it 'approves' do
-    tournament = create(:tournament, users: [@user], name: 'foo')
-    claim = tournament.tournament_claims.first
-    assert !claim.approved
+    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
+    create(:tournament, tournament_claims: [claim], name: 'foo')
+    assert !claim.reload.approved
     claim.approve!
     claim.reload
     assert claim.approved
+  end
+
+  it 'does not create duplicate claim' do
+    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
+    tournament = create(:tournament, tournament_claims: [claim], name: 'foo')
+    expect do
+      create(:tournament_claim, user: @user, tournament:)
+    end.to raise_error(ActiveRecord::RecordInvalid)
+  end
+
+  it 'can create claims for multiple tournaments' do
+    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
+    expect do
+      create(:tournament, tournament_claims: [claim], name: 'foo')
+    end.to change(TournamentClaim, :count).by 1
+
+    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
+    expect do
+      create(:tournament, tournament_claims: [claim], name: 'bar')
+    end.to change(TournamentClaim, :count).by 1
   end
 end

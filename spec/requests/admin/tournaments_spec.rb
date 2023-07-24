@@ -29,9 +29,13 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         tnames = Set.new
         tournament_counts.map do |status, count|
           get admin_tournaments_path, params: { status: }
-          expect(assigns(:tournaments).size).to eq count + 1
+          expect(assigns(:tournaments).size).to eq count + 2
           assigns(:tournaments).each do |tournament|
-            expect(tournament.users).to include @user
+            if tournament.name =~ /^Tournament/
+              assert tournament.owned_by(@user)
+            else
+              assert !tournament.owned_by(@user)
+            end
             expect(tournament.status).to eq status.to_s
             expect(tnames).not_to include tournament.name
             tnames << tournament.name
@@ -44,17 +48,18 @@ RSpec.describe 'Admin::Tournaments', type: :request do
         tournament_counts.map do |status, count|
           create(:tournament, name: "Unowned tournament #{index}", status:, registration_close: 2.days.ago)
           index += 1
+          claim = build(:tournament_claim, user: @user, reasoning: :reasons)
           create(:tournament, name: "Unapproved tournament #{index}",
-                              users: [@user],
+                              tournament_claims: [claim],
                               status:, registration_close: 2.days.ago)
           index += 1
           count.times do
-            new_tournament = create(:tournament,
-                                    name: "Tournament #{index}",
-                                    users: [@user],
-                                    status:,
-                                    registration_close: 2.days.from_now)
-            new_tournament.tournament_claims.first.approve!
+            claim = build(:tournament_claim, user: @user, approved: true)
+            create(:tournament,
+                   name: "Tournament #{index}",
+                   tournament_claims: [claim],
+                   status:,
+                   registration_close: 2.days.from_now)
             index += 1
           end
         end
@@ -240,7 +245,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as user' do
       let(:user) { create(:user, confirmed_at: 2.days.ago) }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
-      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [user]) }
+      let(:claim) { build(:tournament_claim, user:, reasoning: :reasons) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim]) }
       before do
         sign_in user
       end
@@ -304,7 +310,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as user' do
       let(:user) { create(:user, confirmed_at: 2.days.ago) }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
-      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', users: [user]) }
+      let(:claim) { build(:tournament_claim, user:, reasoning: :reasons) }
+      let(:unapproved) { create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim]) }
       let(:new_name) { 'New Name' }
       let(:valid_params) { { tournament: { name: new_name } } }
       before do
@@ -346,7 +353,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
       context 'working with own tournament' do
         before(:each) do
-          @submitted = create(:tournament, name: 'Submitted Tournament', users: [@user])
+          claim = build(:tournament_claim, user: @user, approved: true)
+          @submitted = create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim])
           @submitted.tournament_claims.first.approve!
         end
 
@@ -377,7 +385,8 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       end
 
       context 'working with not approved tournament' do
-        let(:submitted) { create(:tournament, name: 'Submitted Tournament', users: [@user]) }
+        let(:claim) { build(:tournament_claim, user: @user, reasoning: :reasons) }
+        let(:submitted) { create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim]) }
 
         it 'redirects and does not update' do
           patch update_status_admin_tournament_path(submitted), params: { status: :pending }
@@ -390,9 +399,9 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
       context 'working with not own tournament' do
         let(:other_user) { create(:user, email: 'other@example.com') }
+        let(:claim) { build(:tournament_claim, user: other_user, reasoning: :reasons) }
         before(:each) do
-          @submitted = create(:tournament, name: 'Submitted Tournament', users: [other_user])
-          @submitted.tournament_claims.first.approve!
+          @submitted = create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim])
         end
 
         it 'redirects and does not update' do

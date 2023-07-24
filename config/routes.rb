@@ -13,7 +13,9 @@ Rails.application.routes.draw do
       patch :update_status, on: :member
       patch :toggle_request_publication, on: :member
       patch :remove_flag, on: :member
+      resources :tournament_claims, only: %i[new create]
     end
+    resources :tournament_claims, only: %i[index edit update destroy]
     resources :messages do
       patch :toggle_requires_action, on: :member
     end

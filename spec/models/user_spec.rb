@@ -18,14 +18,15 @@ RSpec.describe User, type: :model do
     other_user = create(:user, email: 'other@example.com')
     create(:tournament, name: 'Unowned tournament')
     2.times do |time|
-      create(:tournament, name: "Unapproved tournament #{time}", users: [user])
+      claim = build(:tournament_claim, user:, reasoning: :reasons)
+      create(:tournament, name: "Unapproved tournament #{time}", tournament_claims: [claim])
     end
     3.times do |time|
-      new_tournament = create(:tournament, name: "Approved tournament #{time}", users: [user])
-      new_tournament.tournament_claims.first.approve!
+      claim = build(:tournament_claim, user:, approved: true)
+      create(:tournament, name: "Approved tournament #{time}", tournament_claims: [claim])
     end
-    other_tournament = create(:tournament, name: 'Other tournament', users: [other_user])
-    other_tournament.tournament_claims.first.approve!
+    claim = build(:tournament_claim, user: other_user, approved: true)
+    create(:tournament, name: 'Other tournament', tournament_claims: [claim])
 
     approved_tournaments = user.tournaments.approved
     expect(approved_tournaments.count).to eq 3
