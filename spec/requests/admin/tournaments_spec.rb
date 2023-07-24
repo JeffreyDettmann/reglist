@@ -20,8 +20,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as user' do
       let(:tournament_counts) { { submitted: 5, pending: 6, ignored: 5, published: 7 } }
       before do
-        @user = create(:user, confirmed_at: 2.days.ago, admin: false)
-        sign_in @user
+        sign_in_user
         load_tournaments
       end
 
@@ -70,9 +69,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
       let(:tournament_counts) { { submitted: 3, pending: 4, ignored: 5, published: 6 } }
       before do
         load_tournaments
-        user = create(:user, admin: true)
-        sign_in user
-        user.confirm
+        sign_in_admin
       end
 
       it 'returns number of submitted without filter' do
@@ -134,9 +131,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in' do
       before do
-        user = create(:user)
-        sign_in user
-        user.confirm
+        sign_in_user
       end
 
       it 'succeeds if authenticated' do
@@ -154,9 +149,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in as admin' do
       before do
-        user = create(:user, admin: true)
-        sign_in user
-        user.confirm
+        sign_in_admin
       end
 
       it 'sets status to pending' do
@@ -174,8 +167,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in as user' do
       before do
-        user = create(:user, confirmed_at: 2.days.ago)
-        sign_in user
+        sign_in_user
       end
 
       it 'succeeds if authenticated' do
@@ -231,9 +223,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user, admin: true)
-        sign_in user
-        user.confirm
+        sign_in_admin
       end
 
       it 'succeeds if authenticated' do
@@ -243,12 +233,12 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'when logged in as user' do
-      let(:user) { create(:user, confirmed_at: 2.days.ago) }
+      let(:user) { @user }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
       let(:claim) { build(:tournament_claim, user:, reasoning: :reasons) }
       let(:unapproved) { create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim]) }
       before do
-        sign_in user
+        sign_in_user
       end
 
       it 'fails if not owned' do
@@ -279,9 +269,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user, admin: true)
-        sign_in user
-        user.confirm
+        sign_in_admin
       end
 
       context 'with valid parameters' do
@@ -308,14 +296,14 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'when logged in as user' do
-      let(:user) { create(:user, confirmed_at: 2.days.ago) }
+      let(:user) { @user }
       let(:unowned) { create(:tournament, name: 'Submitted Tournament', users: []) }
       let(:claim) { build(:tournament_claim, user:, reasoning: :reasons) }
       let(:unapproved) { create(:tournament, name: 'Submitted Tournament', tournament_claims: [claim]) }
       let(:new_name) { 'New Name' }
       let(:valid_params) { { tournament: { name: new_name } } }
       before do
-        sign_in user
+        sign_in_user
       end
 
       it 'fails if not owned' do
@@ -347,8 +335,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'when logged in as user' do
       before do
-        @user = create(:user, confirmed_at: 2.days.ago, admin: false)
-        sign_in @user
+        sign_in_user
       end
 
       context 'working with own tournament' do
@@ -417,9 +404,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     context 'when logged in as admin' do
       let(:submitted) { create(:tournament, name: 'Submitted Tournament') }
       before do
-        user = create(:user, admin: true)
-        sign_in user
-        user.confirm
+        sign_in_admin
       end
 
       it 'updates status with valid status' do
@@ -449,7 +434,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
 
     context 'logged in as user' do
-      let(:user) { create(:user, confirmed_at: 2.days.ago) }
+      let(:user) { @user }
       let(:tournament_claims) { [build(:tournament_claim, user:, approved: true)] }
       let(:pending_tournament) { create(:tournament, name: 'Pending', tournament_claims:, status: :pending) }
       let(:submitted_tournament) { create(:tournament, name: 'Submitted', tournament_claims:, status: :submitted) }
@@ -469,7 +454,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
                status: :pending)
       end
       before do
-        sign_in user
+        sign_in_user
       end
 
       it 'adds action_required message when tournament does not have publication request' do
@@ -542,8 +527,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
 
     context 'logged in as admin' do
       before do
-        admin = create(:user, confirmed_at: 2.days.ago, admin: true, email: 'admin@example.com')
-        sign_in admin
+        sign_in_admin
       end
 
       it 'removes foo flag but not bar flag' do
@@ -556,7 +540,7 @@ RSpec.describe 'Admin::Tournaments', type: :request do
     end
     context 'logged in as user' do
       before do
-        sign_in user
+        sign_in_user
       end
 
       it 'fails' do

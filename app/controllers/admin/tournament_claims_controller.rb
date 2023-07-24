@@ -6,6 +6,8 @@ module Admin
   class TournamentClaimsController < AdminController
     before_action :make_tournament_claim, only: %i[new create]
 
+    def index; end
+
     def create
       reasoning = tournament_claim_params[:reasoning]
       @tournament_claim = TournamentClaim.new(tournament: @tournament,

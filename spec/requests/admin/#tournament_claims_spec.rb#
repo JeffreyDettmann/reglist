@@ -8,7 +8,9 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
       get admin_tournament_claims_path
       expect(response).to redirect_to(new_user_session_path)
     end
-    context 'when logged in as admin'
+    context 'when logged in as admin' do
+    end
+
     context 'when logged in as user'
   end
 
