@@ -38,6 +38,9 @@
 		  <div>
 			<%= link_to t(:messages), admin_messages_url  if current_user %>
 		  </div>
+          <div>
+			<%= link_to t(:claims), admin_tournament_claims_url  if current_user %>
+          </div>
 		  <div>
 			<%= button_to(t(:sign_out), destroy_user_session_path, method: :delete) if current_user %>
 		  </div>

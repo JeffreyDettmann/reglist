@@ -1,0 +1,8 @@
+<h1><%= t(:claim_tournament, tournament: @tournament_claim.tournament.name) %></h1>
+<%= form_with(model: [:admin, @tournament_claim]) do |form| %>
+<div>
+  <p><%= t(:why_we_should_accept_your_claim) %></p>
+  <%= form.text_area :reasoning %>
+</div>
+<p><%= form.submit t(:update) %></p>
+<% end %>

@@ -1,0 +1,13 @@
+<% if @unapproved_claims %>
+<h2><%= t(:unapproved_claims) %></h2>
+<div class="container">
+  <%= render partial: 'tournament_claim', collection: @unapproved_claims, locals: { approved: false } %>
+</div>
+<% end %>
+
+<% if @approved_claims %>
+<h2><%= t(:approved_claims) %></h2>
+<div class="container">
+  <%= render partial: 'tournament_claim', collection: @approved_claims, locals: { approved: true } %>
+</div>
+<% end %>

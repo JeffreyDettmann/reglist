@@ -45,11 +45,12 @@ en:
   site_admin: "Site Admin"
   submitted: "Submitted"
   thanks_for_comment: "Thank you for the comment!"
+  thing_updated: "%{name} succesfully updated"
+  thing_deleted: "%{name} succesfully deleted"
   tier: "Tier"
   tournament_claimed: "Tournament successfully claimed"
   tournament_created: "Tournament successfully created"
   tournament_dates: "Tournament Dates"
-  tournament_updated: "{{name}} succesfully updated"
   unread: "Unread"
   date:
     formats:

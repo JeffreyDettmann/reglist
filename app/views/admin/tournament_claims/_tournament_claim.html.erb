@@ -1,0 +1,27 @@
+<div class="row pt-1">
+  <div class="col-2">
+    <%= tournament_claim.tournament.name %>
+  </div>
+  <% if current_user.admin? %>
+  <div class="col-2">
+    <%= tournament_claim.user.email %>
+  </div>
+  <div class="col-6">
+    <%= tournament_claim.reasoning %>
+    </div>
+  <div class="col-2">
+    <% if approved %>
+  <%= button_to(t(:remove_approval), approve_admin_tournament_claim_path(tournament_claim), params: { approved: false }, method: :patch) %>
+  <% else %>
+  <%= button_to(t(:approve), approve_admin_tournament_claim_path(tournament_claim), params: { approved: true }, method: :patch) %>
+  <% end %>
+  </div>
+  <% else %>
+  <div class="col-1">
+      <%= link_to(t(:edit), edit_admin_tournament_claim_path(tournament_claim)) %>    
+  </div>
+  <div class="col-2">
+    <%= button_to(t(:unclaim), admin_tournament_claim_path(tournament_claim), method: :delete) %>
+  </div>
+  <% end %>
+</div>

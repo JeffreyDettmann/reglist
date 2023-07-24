@@ -11,8 +11,7 @@ RSpec.describe 'Admin::Messages', type: :request do
 
     context 'logged in as admin' do
       before do
-        user = create(:user, confirmed_at: 2.days.ago, admin: true, email: 'admin@example.com')
-        sign_in user
+        sign_in_admin
         load_messages
       end
 
@@ -102,9 +101,8 @@ RSpec.describe 'Admin::Messages', type: :request do
 
     context 'logged in as user' do
       before do
-        user = create(:user, confirmed_at: 2.days.ago)
-        sign_in user
-        load_messages(user)
+        sign_in_user
+        load_messages(@user)
       end
 
       it 'returns messages in order' do
@@ -142,7 +140,7 @@ RSpec.describe 'Admin::Messages', type: :request do
   end
 
   describe 'PATCH /:id/toggle_requires_action' do
-    let(:user) { create(:user, confirmed_at: 2.days.ago) }
+    let(:user) { create(:user) }
     let(:requires_action) { create(:message, body: 'Requires action', requires_action: true, user:) }
     let(:not_requires_action) { create(:message, body: 'Does not require action', requires_action: false) }
     it 'fails if not authenticated' do
@@ -152,8 +150,7 @@ RSpec.describe 'Admin::Messages', type: :request do
 
     context 'logged in as admin' do
       before do
-        admin = create(:user, confirmed_at: 2.days.ago, admin: true, email: 'admin@example.com')
-        sign_in admin
+        sign_in_admin
       end
 
       it 'sets requires_action to false when message requires action' do
@@ -171,7 +168,7 @@ RSpec.describe 'Admin::Messages', type: :request do
 
     context 'logged in as user' do
       before do
-        sign_in user
+        sign_in_user
       end
 
       it 'fails' do

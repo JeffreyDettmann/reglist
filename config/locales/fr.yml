@@ -38,11 +38,11 @@ fr:
   site_admin: "Admin du site"
   submitted: "soumis"
   thanks_for_comment: "Merci pour le commentaire !"
+  thing_updated: "On a changé %{name}"
   tier: "Étage"
   tournament_claimed: "Tournoi réclamé"
   tournament_created: "On a créé le tournoi"
   tournament_dates: "Dates de tournoi"
-  tournament_updated: "On a changé le tournoi"
   unread: "non lu"
   date:
     formats:

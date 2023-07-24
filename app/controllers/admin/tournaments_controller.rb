@@ -50,7 +50,7 @@ module Admin
         if @tournament.update(tournament_params)
           format.html do
             redirect_to admin_tournaments_url(status: @tournament.status),
-                        notice: t(:tournament_updated, name: @tournament.name)
+                        notice: t(:thing_updated, name: @tournament.name)
           end
           format.json { render :show, status: :ok, location: @tournament }
         else
@@ -67,7 +67,7 @@ module Admin
         if status_valid && @tournament.update(status: params[:status])
           format.html do
             redirect_to admin_tournaments_url(status: old_status),
-                        notice: t(:tournament_updated, name: @tournament.name)
+                        notice: t(:thing_updated, name: @tournament.name)
           end
           format.json { render :show, status: :ok, location: @tournament }
         else
