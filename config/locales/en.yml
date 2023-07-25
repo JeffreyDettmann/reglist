@@ -1,60 +1,82 @@
+---
 en:
-  accept: "Accept"
-  claim: "Claim"
-  claim_tournament: "Claim %{tournament}"
-  contact_us: "Send us a message!"
-  conversation_with: "Conversation with"
-  deadline: "Deadline"
-  edit: "Edit"
-  forgot_your_password: "Forgot your password?"
-  format: "Format"
-  from_anonymous: "From Anonymous"
-  game: "Game"
-  have_something_to_tell_us: "Have something to tell us?"
-  home_page: "Home"
-  ignore: "Ignore"
-  links: "Links"
-  manage_tournaments: "Manage Tournaments"
-  mark_done: "mark done"
-  mark_todo: "mark todo"
-  messages: "Messages"
-  name: "Name"
-  needs_action: "Needs Action"
-  new_tournament: "New"
-  not_authorized: "You are not authorized to do this"
-  not_receive_confirmation_instructions: "Didn't receive confirmation instructions?"
-  not_receive_unlock_instructions: "Didn't receive unlock instructions?"
-  notes: "Notes"
-  organizers: "Organizers"
-  past_tournaments: "Past Tournaments"
-  pending: "Pending"
-  please_update_password: "Please update your password"
-  publish: "Publish"
-  published: "Published"
-  register: "register"
-  registration: registration
-  registration_opportunities: "Tournament Registration Opportunities"
-  restrictions: "Restrictions"
-  rules: "rules"
-  send_message: "Send Message"
-  sender: "Sender"
-  sign_in: "Log In"
-  sign_in_with: "Sign in with {{provider}}"
-  sign_out: "Sign Out"
-  sign_up: "Sign up"
-  site_admin: "Site Admin"
-  submitted: "Submitted"
-  thanks_for_comment: "Thank you for the comment!"
-  thing_updated: "%{name} succesfully updated"
-  thing_deleted: "%{name} succesfully deleted"
-  tier: "Tier"
-  tournament_claimed: "Tournament successfully claimed"
-  tournament_created: "Tournament successfully created"
-  tournament_dates: "Tournament Dates"
-  unread: "Unread"
+  accept: Accept
+  approve: approve
+  approved_claims: Approved Claims
+  claim: Claim
+  claim_tournament: Claim %{tournament}
+  claims: claims
+  contact: Contact us
+  contact_us: Send us a message!
+  conversation_with: Conversation with
   date:
     formats:
       day_month: "%-d %B"
+  deadline: Deadline
+  edit: Edit
+  format: Format
+  from_anonymous: From Anonymous
+  game: Game
+  have_something_to_tell_us: Have something to tell us?
+  helpers:
+    label:
+      tournament:
+        end_date: end date
+        format: format
+        game: game
+        info_url: info url
+        liquipedia_url: liquipedia path
+        name: name
+        notes: notes
+        organizers: organizers
+        prize_pool: prize pool
+        registration_close: registration clse
+        registration_url: registration url
+        restrictions: restrictions
+        rules_url: rules url
+        start_date: start date
+        tier: tier
+  home_page: Home
+  ignore: Ignore
+  links: Links
+  manage_tournaments: Manage Tournaments
+  mark_done: mark done
+  mark_todo: mark todo
+  messages: Messages
+  name: Name
+  needs_action: Needs Action
+  new_tournament: New
+  not_authorized: You are not authorized to do this
+  notes: Notes
+  organizers: Organizers
+  past_tournaments: Past Tournaments
+  pending: Pending
+  please_update_password: Please update your password
+  publish: Publish
+  published: Published
+  register: register
+  registration: registration
+  registration_opportunities: Tournament Registration Opportunities
+  remove_approval: Remove approval
+  restrictions: Restrictions
+  rules: rules
+  send_message: Send Message
+  sender: Sender
+  sign_out: Sign Out
+  site_admin: Site Admin
+  submitted: Submitted
+  thanks_for_comment: Thank you for the comment!
+  thing_deleted: "%{name} succesfully deleted"
+  thing_updated: "%{name} succesfully updated"
+  tier: Tier
   time:
     formats:
       day_month: "%-d %B"
+  tournament_claim_submitted_for_approval: Tournament claim submitted for approval
+  tournament_created: Tournament successfully created
+  tournament_dates: Tournament Dates
+  unapproved_claims: Unapproved Claims
+  unclaim: Unclaim
+  unread: Unread
+  update: Update
+  why_we_should_accept_your_claim: Why we should accept your claim

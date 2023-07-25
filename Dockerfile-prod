@@ -2,9 +2,22 @@ FROM reglist-web:latest AS app
 
 WORKDIR /app
 
-COPY . /app
-
-RUN bundle exec rake assets:precompile
+RUN mkdir /app/log
+COPY config.ru /app/config.ru
+COPY bin /app/bin
+COPY lib /app/lib
+COPY Rakefile /app/Rakefile
+COPY storage /app/storage
+COPY Gemfile /app/Gemfile
+COPY Gemfile.lock /app/Gemfile.lock
+COPY app/assets /app/app/assets
+COPY public /app/public
+COPY db /app/db
+COPY config /app/config
+COPY app/models /app/app/models
+COPY app/helpers /app/app/helpers
+COPY app/controllers /app/app/controllers
+COPY app/views /app/app/views
 
 COPY bin/entrypoint-prod.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh

@@ -2,7 +2,7 @@
 
 # Default methods for all controllers
 class ApplicationController < ActionController::Base
-  around_action :switch_locale
+  around_action :switch_locale unless Rails.env == 'development'
 
   def switch_locale(&)
     locale = http_accept_language.compatible_language_from(I18n.available_locales) || I18n.default_locale

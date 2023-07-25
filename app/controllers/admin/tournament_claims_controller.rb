@@ -23,7 +23,6 @@ module Admin
       @tournament_claim = TournamentClaim.new(tournament: @tournament,
                                               user: current_user,
                                               reasoning:)
-      @tournament_claim.errors.add(:reasoning, t(:no_blank)) unless reasoning.present?
 
       respond_to do |format|
         if reasoning.present? && @tournament_claim.save
