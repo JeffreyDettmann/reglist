@@ -11,6 +11,14 @@ module ApplicationHelper
     dt ? l(dt, format:) : nil
   end
 
+  def add_param_to_path(path, key, value)
+    if path.include?('?')
+      "#{path}&#{key}=#{value}"
+    else
+      "#{path}?#{key}=#{value}"
+    end
+  end
+
   def maybe_link_name(tournament)
     if tournament.info_url.present?
       link_to(tournament.name, tournament.info_url)

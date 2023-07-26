@@ -24,6 +24,12 @@
 		  </a>
 		</div>
 	  </div>
+      <div class="d-flex flex-row-reverse">
+        <% I18n.available_locales.each do |locale| %>
+        <span class="pe-2"><%= link_to(locale, add_param_to_path(request.path, :locale, locale)) %></span>
+        <% end %>
+      </div>
+
       <% if notice %><p class="alert alert-success"><%= notice %></p><% end %>
       <% if alert %><p class="alert alert-danger"><%= alert %></p><% end %>
       <%= yield %>

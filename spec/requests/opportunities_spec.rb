@@ -34,5 +34,34 @@ RSpec.describe 'Opportunities', type: :request do
       create(:tournament, name: 'published, registration close today', status: :published,
                           registration_close: Date.today)
     end
+
+    it 'handles internationalization' do
+      # defaults english
+      get root_path
+      expect(response.body).to include(I18n.t(:contact_us, locale: :en))
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :fr))
+
+      # with header
+      get root_path, headers: { 'ACCEPT-LANGUAGE': 'fr' }
+      expect(response.body).to include(I18n.t(:contact_us, locale: :fr))
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :en))
+
+      # with invalid param
+      get root_path(locale: 'tlh')
+      expect(response.body).to include(I18n.t(:contact_us, locale: :en))
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :fr))
+      expect(response.cookies).to be_empty
+
+      # with valid param
+      get root_path(locale: 'fr')
+      expect(response.body).to include(I18n.t(:contact_us, locale: :fr))
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :en))
+      expect(response.cookies).to eq({ 'locale' => 'fr' })
+
+      # with cookie set by previous call
+      get root_path
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :en))
+      expect(response.body).to include(I18n.t(:contact_us, locale: :fr))
+    end
   end
 end
