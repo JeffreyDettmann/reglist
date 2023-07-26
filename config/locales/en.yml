@@ -13,6 +13,7 @@ en:
     formats:
       day_month: "%-d %B"
   deadline: Deadline
+  delete: Delete
   edit: Edit
   format: Format
   from_anonymous: From Anonymous

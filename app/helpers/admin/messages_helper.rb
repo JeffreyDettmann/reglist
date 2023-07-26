@@ -44,13 +44,9 @@ module Admin
     end
 
     def requires_action(message)
-      if current_user.admin?
-        button_text = message.requires_action? ? '&#x2757;' : '&#x2705;'
-        title = message.requires_action? ? t(:mark_done) : t(:mark_todo)
-        button_to(raw(button_text), toggle_requires_action_admin_message_path(message), method: :patch, title:)
-      else
-        '&nbsp;'
-      end
+      button_text = message.requires_action? ? '&#x2757;' : '&#x2705;'
+      title = message.requires_action? ? t(:mark_done) : t(:mark_todo)
+      button_to(raw(button_text), toggle_requires_action_admin_message_path(message), method: :patch, title:)
     end
   end
 end

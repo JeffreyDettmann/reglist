@@ -139,6 +139,59 @@ RSpec.describe 'Admin::Messages', type: :request do
     end
   end
 
+  describe 'DELETE /:id' do
+    let(:user) { create(:user) }
+    let(:unwanted_message) { create(:message, body: 'Not wanted', user:) }
+    let(:anonymous_unwanted_message) { create(:message, body: 'Not wanted from anonymous') }
+    it 'fails if not authenticated' do
+      unwanted_message
+      expect do
+        delete admin_message_path(unwanted_message)
+      end.to change(Message, :count).by(0)
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
+    context 'logged in as admin' do
+      before do
+        sign_in_admin
+      end
+
+      it 'deletes and redirects to user messages' do
+        unwanted_message
+        expect do
+          delete admin_message_path(unwanted_message)
+        end.to change(Message, :count).by(-1)
+        expect { unwanted_message.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(response).to redirect_to(admin_messages_url(user: user.email))
+      end
+
+      it 'deletes and redirects to anonymous' do
+        anonymous_unwanted_message
+        expect do
+          delete admin_message_path(anonymous_unwanted_message)
+        end.to change(Message, :count).by(-1)
+        expect { anonymous_unwanted_message.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(response).to redirect_to(admin_messages_url(user: 'anonymous'))
+      end
+    end
+
+    context 'logged in as user' do
+      before do
+        sign_in_user
+      end
+
+      it 'fails' do
+        unwanted_message
+        expect do
+          delete admin_message_path(unwanted_message)
+        end.to change(Message, :count).by(0)
+        expect { unwanted_message.reload }.to_not raise_error
+        expect(response).to redirect_to(admin_messages_url)
+        expect(flash[:alert]).to eq I18n.t(:not_authorized)
+      end
+    end
+  end
+
   describe 'PATCH /:id/toggle_requires_action' do
     let(:user) { create(:user) }
     let(:requires_action) { create(:message, body: 'Requires action', requires_action: true, user:) }

@@ -17,6 +17,18 @@ module Admin
       @message = Message.new(user_id: @messages.first&.user_id)
     end
 
+    def destroy
+      if current_user.admin?
+        message = Message.find(params[:id])
+        user = message.user
+        message.destroy!
+        redirect_to admin_messages_url(user: user&.email || 'anonymous')
+      else
+        redirect_to admin_messages_url,
+                    alert: t(:not_authorized)
+      end
+    end
+
     def toggle_requires_action
       if current_user.admin?
         message = Message.find(params[:id])

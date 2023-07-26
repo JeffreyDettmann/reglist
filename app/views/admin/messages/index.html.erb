@@ -36,7 +36,10 @@
   <div class="container rounded border border-dark col-9 col-md-8 bg-light <%= 'fw-bold' if unread(message) %>">
     <%== add_links(message) %>
   </div>
-  <div class="col-1"><%== requires_action(message) %></div>
+  <% if current_user.admin? %>
+    <div class="col-1"><%== requires_action(message) %></div>
+    <div class="col-1"><%== button_to(t(:delete), admin_message_path(message), method: :delete) %></div>
+  <% end %>
   <% else %>
   <div class="col-1">&nbsp;</div>
   <div class="container rounded border border-dark col-9 col-md-8 bg-primary text-white <%= 'fw-bold' if unread(message) %>">

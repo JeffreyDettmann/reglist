@@ -13,6 +13,7 @@ fr:
     formats:
       day_month: "%-d %B"
   deadline: fin des inscriptions
+  delete: supprimer
   edit: éditer
   format: Format
   from_anonymous: d'anonyme
