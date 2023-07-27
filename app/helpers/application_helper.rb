@@ -12,6 +12,7 @@ module ApplicationHelper
   end
 
   def add_param_to_path(path, key, value)
+    path.gsub!('pointless=true', 'pointless=false')
     if path.include?('?')
       "#{path}&#{key}=#{value}"
     else

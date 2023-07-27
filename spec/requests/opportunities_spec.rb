@@ -52,11 +52,17 @@ RSpec.describe 'Opportunities', type: :request do
       expect(response.body).to_not include(I18n.t(:contact_us, locale: :fr))
       expect(response.cookies).to be_empty
 
-      # with valid param
+      # with valid param but cookies not accepted
       get root_path(locale: 'fr')
       expect(response.body).to include(I18n.t(:contact_us, locale: :fr))
       expect(response.body).to_not include(I18n.t(:contact_us, locale: :en))
-      expect(response.cookies).to eq({ 'locale' => 'fr' })
+      expect(response.cookies).to be_empty
+
+      # with valid param but cookies accepted
+      get root_path(locale: 'fr', accept_cookies: 'true')
+      expect(response.body).to include(I18n.t(:contact_us, locale: :fr))
+      expect(response.body).to_not include(I18n.t(:contact_us, locale: :en))
+      expect(response.cookies['locale']).to eq 'fr'
 
       # with cookie set by previous call
       get root_path

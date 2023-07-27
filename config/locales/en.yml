@@ -1,6 +1,10 @@
 ---
 en:
+  privacy_policy: Privacy Policy
+  terms_of_use: Terms of Use
+  pointless_without_cookies: This action is useless with cookies disabled
   accept: Accept
+  learn_more: Learn more
   approve: approve
   approved_claims: Approved Claims
   claim: Claim
@@ -81,3 +85,4 @@ en:
   unread: Unread
   update: Update
   why_we_should_accept_your_claim: Why we should accept your claim
+  cookie_reasoning: This site uses cookies to help personalise content, tailor your experience and to keep you logged in if you register.

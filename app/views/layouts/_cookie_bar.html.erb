@@ -1,0 +1,11 @@
+<div class="container mt-5 bg-warning rounded p-2">
+  <div class="row">
+    <div class="col-8"><%= t(:cookie_reasoning) %></div>
+    <div class="col-2">
+      <%= link_to(t(:accept), add_param_to_path(request.original_url, :accept_cookies, true)) %>
+    </div>
+    <div class="col-2">
+      <%= link_to t(:learn_more), compliance_privacy_policy_path %>
+    </div>
+  </div>
+</div>

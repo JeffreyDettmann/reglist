@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'opportunities#index'
 
+  get 'compliance/dmca'
+  get 'compliance/privacy_policy'
+  get 'compliance/terms'
+
   resource :messages, only: %i[new create]
 
   namespace :admin do

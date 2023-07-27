@@ -1,5 +1,6 @@
----
 fr:
+  privacy_policy: Charte de confidentialité
+  terms_of_use: Conditions d'utilisation
   accept: accepter
   approve: Approuver
   approved_claims: Demandes Approuvées
@@ -81,3 +82,6 @@ fr:
   unread: non lu
   update: Changez
   why_we_should_accept_your_claim: Veuillez décrire pourquoi nous devrions approuver votre demande
+  cookie_reasoning: Ce site utilise des cookies pour aider à personnaliser le contenu, adapter votre expérience et vous garder connecté si vous vous inscrivez.
+  learn_more: en savoir plus
+  pointless_without_cookies: cela ne sert à rien sans cookies
