@@ -151,7 +151,7 @@ module Admin
     def remove_message_from_tournament(tournament)
       message = tournament.message
       if tournament.update(message: nil, minus_flags: 'publish request') && message.destroy
-        flash[:notice] = "Successfully removed request of publication of #{tournament.name}."
+        flash[:notice] = t(:successfully_removed_request_of_publication)
       else
         flash[:alert] = "Removal of request for publication of #{tournament.name} failed."
       end
@@ -160,7 +160,7 @@ module Admin
     def add_message_to_tournament(tournament)
       message = Message.new(user: current_user, body: "Please publish #{tournament.name}", requires_action: true)
       if tournament.update(plus_flags: 'publish request', message:)
-        flash[:notice] = "Request of publication of #{tournament.name} successful."
+        flash[:notice] = t(:request_of_publication_successful)
       else
         flash[:alert] = "Request of publication of #{tournament.name} failed."
       end

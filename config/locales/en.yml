@@ -63,6 +63,9 @@ en:
   registration: registration
   registration_opportunities: Tournament Registration Opportunities
   remove_approval: Remove approval
+  request_not_publish: Request not Publish
+  request_of_publication_successful: Request for publication sent
+  request_publish: Request Publish
   restrictions: Restrictions
   rules: rules
   send_message: Send Message
@@ -70,6 +73,7 @@ en:
   sign_out: Sign Out
   site_admin: Site Admin
   submitted: Submitted
+  successfully_removed_request_of_publication: Request for publication removed
   terms_of_use: Terms of Use
   thanks_for_comment: Thank you for the comment!
   thing_deleted: "%{name} succesfully deleted"

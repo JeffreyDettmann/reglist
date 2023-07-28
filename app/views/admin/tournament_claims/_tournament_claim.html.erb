@@ -1,8 +1,8 @@
 <div class="row pt-1">
+  <% if current_user.admin? %>
   <div class="col-2">
     <%= tournament_claim.tournament.name %>
   </div>
-  <% if current_user.admin? %>
   <div class="col-2">
     <%= tournament_claim.user.email %>
   </div>
@@ -17,10 +17,13 @@
   <% end %>
   </div>
   <% else %>
-  <div class="col-1">
-      <%= link_to(t(:edit), edit_admin_tournament_claim_path(tournament_claim)) %>    
+  <div class="col-4 col-lg-2">
+    <%= tournament_claim.tournament.name %>
   </div>
   <div class="col-2">
+      <%= link_to(t(:edit), edit_admin_tournament_claim_path(tournament_claim)) %>    
+  </div>
+  <div class="col-3">
     <%= button_to(t(:unclaim), admin_tournament_claim_path(tournament_claim), method: :delete) %>
   </div>
   <% end %>

@@ -3,9 +3,9 @@ fr:
   accept: accepter
   approve: Approuver
   approved_claims: Demandes Approuvées
-  claim: Demander
-  claim_tournament: Demandez %{tournament}
-  claims: demandes
+  claim: revendiquer
+  claim_tournament: revendiquez %{tournament}
+  claims: revendications
   contact: Contactez-nous
   contact_us: Contact
   conversation_with: Conversation avec
@@ -15,7 +15,7 @@ fr:
       day_month: "%-d %B"
   deadline: fin des inscriptions
   delete: supprimer
-  edit: éditer
+  edit: modifier
   format: Format
   from_anonymous: d'anonyme
   game: titre
@@ -42,7 +42,7 @@ fr:
   ignore: ignorer
   learn_more: en savoir plus
   links: liens
-  manage_tournaments: gestion de tournoi
+  manage_tournaments: gerer les tournois
   mark_done: marquer faite
   mark_todo: marquer à faire
   messages: messages
@@ -63,6 +63,9 @@ fr:
   registration: registration
   registration_opportunities: possibilités d'inscription au tournoi
   remove_approval: Supprimer l'approbation
+  request_not_publish: demander de ne pas publier
+  request_of_publication_successful: La demande a été envoyée
+  request_publish: demander la publication
   restrictions: restrictions
   rules: règles
   send_message: envoyer le message
@@ -70,6 +73,7 @@ fr:
   sign_out: se déconnecter
   site_admin: Admin du site
   submitted: soumis
+  successfully_removed_request_of_publication: La demande a été supprimée
   terms_of_use: Conditions d'utilisation
   thanks_for_comment: Merci pour le commentaire !
   thing_deleted: On a supprimé %{name}
@@ -78,11 +82,11 @@ fr:
   time:
     formats:
       day_month: "%-d %B"
-  tournament_claim_submitted_for_approval: La demande soumise pour approbation
+  tournament_claim_submitted_for_approval: La revendication soumise pour approbation
   tournament_created: On a créé le tournoi
   tournament_dates: Dates de tournoi
-  unapproved_claims: Demandes non Approuvées
-  unclaim: Supprimer la demande
+  unapproved_claims: Revendications non Approuvées
+  unclaim: Supprimer la revendication
   unread: non lu
   update: Changez
-  why_we_should_accept_your_claim: Veuillez décrire pourquoi nous devrions approuver votre demande
+  why_we_should_accept_your_claim: Veuillez décrire pourquoi nous devrions approuver votre revendication

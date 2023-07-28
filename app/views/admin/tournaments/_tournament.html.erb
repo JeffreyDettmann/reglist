@@ -1,38 +1,38 @@
 <div class="container">
   <h2 class="<%= name_class(tournament) %>"><%= tournament.name %></h2>
   <div class="row">
-    <div class="col-1">
+	<div class="col-12 col-lg-1">
       <%= tournament.game %>
     </div>
-    <div class="col-1">
+	<div class="col-12 col-lg-1">
       <%= tournament.tier %>
     </div>
-    <div class="col-1">
+	<div class="col-12 col-lg-1">
       <%= link_to("liquipedia", "https://liquipedia.net#{tournament.liquipedia_url}") if tournament.liquipedia_url.present? %>
     </div>
-    <div class="col-1">
+	<div class="col-12 col-lg-1">
       <%= link_to(t(:rules), "#{tournament.rules_url}") if tournament.rules_url.present? %>
     </div>
-    <div class="col-1">
+	<div class="col-12 col-lg-1">
       <%= link_to(t(:registration), "#{tournament.registration_url}") if tournament.registration_url.present? %>
     </div>
     <% if tournament.owned_by(current_user) %>
-    <div class="col-1">
+	<div class="col-3 col-lg-1">
       <%= button_to(t(:accept), update_status_admin_tournament_path(tournament), method: :patch, params: { status: :pending }) if ['submitted', 'ignored'].include?(tournament.status)%>
     </div>
-    <div class="col-1">
+	<div class="col-2 col-lg-1">
       <%= button_to(t(:ignore), update_status_admin_tournament_path(tournament), method: :patch, params: { status: :ignored }) unless tournament.status == 'ignored' %>
     </div>
-    <div class="col-1">
+	<div class="col-5 col-lg-2">
       <% if current_user.admin? %>
         <%= button_to(t(:publish), update_status_admin_tournament_path(tournament),
             disabled: tournament.registration_close.blank?,
             title: tournament.registration_close.blank? ? 'Needs registration_close' : '',
             method: :patch, params: { status: :published }) unless ['ignored', 'published'].include?(tournament.status) %>
       <% elsif tournament.message %>
-        <%= button_to("Request Not Publish", toggle_request_publication_admin_tournament_path(tournament), method: :patch) unless ['ignored', 'published'].include?(tournament.status) %>
-      <% else %>
-        <%= button_to("Request Publish", toggle_request_publication_admin_tournament_path(tournament), method: :patch) unless ['ignored', 'published'].include?(tournament.status) %>
+        <%= button_to(t(:request_not_publish), toggle_request_publication_admin_tournament_path(tournament), method: :patch) unless ['ignored', 'published'].include?(tournament.status) %>
+      <% elsif params['status'] == 'pending' %>
+        <%= button_to(t(:request_publish), toggle_request_publication_admin_tournament_path(tournament), method: :patch) unless ['ignored', 'published'].include?(tournament.status) %>
       <% end %>
     </div>
     <% if current_user.admin? && tournament.flags.present?
@@ -41,7 +41,7 @@
     <% end %>
 
     <% end %>
-    <div class="col-sm">
+	<div class="col-2 col-lg-1">
       <%= link_to(t(:edit), edit_admin_tournament_path(tournament)) unless tournament.status == 'ignored' %>
     </div>
     <% else %>
