@@ -1,10 +1,6 @@
 ---
 en:
-  privacy_policy: Privacy Policy
-  terms_of_use: Terms of Use
-  pointless_without_cookies: This action is useless with cookies disabled
   accept: Accept
-  learn_more: Learn more
   approve: approve
   approved_claims: Approved Claims
   claim: Claim
@@ -13,6 +9,7 @@ en:
   contact: Contact us
   contact_us: Send us a message!
   conversation_with: Conversation with
+  cookie_reasoning: This site uses cookies to help personalise content, tailor your experience and to keep you logged in if you register.
   date:
     formats:
       day_month: "%-d %B"
@@ -43,6 +40,7 @@ en:
         tier: tier
   home_page: Home
   ignore: Ignore
+  learn_more: Learn more
   links: Links
   manage_tournaments: Manage Tournaments
   mark_done: mark done
@@ -57,6 +55,8 @@ en:
   past_tournaments: Past Tournaments
   pending: Pending
   please_update_password: Please update your password
+  pointless_without_cookies: This action is useless with cookies disabled
+  privacy_policy: Privacy Policy
   publish: Publish
   published: Published
   register: register
@@ -70,6 +70,7 @@ en:
   sign_out: Sign Out
   site_admin: Site Admin
   submitted: Submitted
+  terms_of_use: Terms of Use
   thanks_for_comment: Thank you for the comment!
   thing_deleted: "%{name} succesfully deleted"
   thing_updated: "%{name} succesfully updated"
@@ -85,4 +86,3 @@ en:
   unread: Unread
   update: Update
   why_we_should_accept_your_claim: Why we should accept your claim
-  cookie_reasoning: This site uses cookies to help personalise content, tailor your experience and to keep you logged in if you register.
