@@ -9,10 +9,10 @@ module Admin
       @messages = []
       if current_user.admin?
         assign_admin_messages
-        @messages.each { |m| m.update_attribute(:read, true) unless m.from_admin? }
+        @messages.each { |m| m.update(read: true) unless m.from_admin? }
       else
         @messages = Message.where(user: current_user).order(:created_at)
-        @messages.each { |m| m.update_attribute(:read, true) if m.from_admin? }
+        @messages.each { |m| m.update(read: true) if m.from_admin? }
       end
       @message = Message.new(user_id: @messages.first&.user_id)
     end
@@ -46,7 +46,7 @@ module Admin
       if params[:user] == 'anonymous'
         @messages = Message.where(user: nil).order(created_at: :desc)
       elsif params[:user]
-        @messages = Message.joins(:user).where('users.email = ?', params[:user]).order(:created_at)
+        @messages = Message.joins(:user).where(users: { email: params[:user] }).order(:created_at)
       else
         assign_user_messages
       end

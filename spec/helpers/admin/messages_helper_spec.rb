@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Admin::MessagesHelper, type: :helper do
+RSpec.describe Admin::MessagesHelper do
   describe 'add links' do
     it 'ignores messages that do not match replacement pattern' do
       body = 'Does not match pattern 27'
@@ -23,7 +23,8 @@ RSpec.describe Admin::MessagesHelper, type: :helper do
     let(:user) { create(:user, admin: false) }
     let(:from_admin) { create(:message, body: 'from admin', from_admin: true, user:) }
     let(:from_user) { create(:message, body: 'from user', from_admin: false, user:) }
-    context 'current user is admin' do
+
+    context 'when current user is admin' do
       before do
         allow(controller).to receive(:current_user).and_return(admin)
       end
@@ -33,7 +34,8 @@ RSpec.describe Admin::MessagesHelper, type: :helper do
         expect(helper.message_alignment(from_user)).to eq 'left'
       end
     end
-    context 'current user is not admin' do
+
+    context 'when current user is not admin' do
       before do
         allow(controller).to receive(:current_user).and_return(user)
       end
@@ -49,34 +51,38 @@ RSpec.describe Admin::MessagesHelper, type: :helper do
     it 'when message unread' do
       message = create(:message, body: 'Unread')
       message.reload
-      assert helper.unread(message)
+      expect(helper.unread(message)).to be_truthy
     end
+
     it 'when message read but was unread' do
       message = create(:message, body: 'Unread')
       message.reload
       message.update(read: true)
       assert message.read
-      assert helper.unread(message)
+      expect(helper.unread(message)).to be_truthy
     end
+
     it 'when message read but was updated' do
       message = create(:message, body: 'Read', read: true)
       message.reload
       message.update(body: 'Updated')
       assert message.read
-      assert !helper.unread(message)
+      expect(helper.unread(message)).to be_falsey
     end
+
     it 'when message read but not updated' do
       message = create(:message, body: 'Read', read: true)
       message.reload
       assert message.read
-      assert !helper.unread(message)
+      expect(helper.unread(message)).to be_falsey
     end
+
     it 'when message updated then reloaded' do
       message = create(:message, body: 'Unread')
       message.update(read: true)
       message.reload
       assert message.read
-      assert !helper.unread(message)
+      expect(helper.unread(message)).to be_falsey
     end
   end
 end

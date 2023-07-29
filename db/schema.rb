@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_20_151615) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_29_160912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_20_151615) do
     t.boolean "approved", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["tournament_id", "user_id"], name: "index_tournament_claims_on_tournament_id_and_user_id", unique: true
     t.index ["tournament_id"], name: "index_tournament_claims_on_tournament_id"
     t.index ["user_id"], name: "index_tournament_claims_on_user_id"
   end
@@ -57,8 +58,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_20_151615) do
     t.string "info_url"
     t.bigint "message_id"
     t.string "flags"
+    t.index ["liquipedia_url"], name: "index_tournaments_on_liquipedia_url", unique: true
     t.index ["message_id"], name: "index_tournaments_on_message_id"
-    t.index ["name"], name: "index_tournaments_on_name"
+    t.index ["name"], name: "index_tournaments_on_name", unique: true
     t.index ["registration_close"], name: "index_tournaments_on_registration_close"
     t.index ["start_date"], name: "index_tournaments_on_start_date"
   end

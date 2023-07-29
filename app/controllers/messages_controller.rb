@@ -5,6 +5,8 @@ class MessagesController < ApplicationController
   before_action :new_tournament, only: %i[create new]
   skip_before_action :require_allow_cookie
 
+  def new; end
+
   def create
     @message.assign_attributes(message_params)
     if current_user

@@ -6,7 +6,7 @@ module Admin
   class TournamentsController < AdminController
     before_action :set_tournament, except: %i[index new create]
     before_action :new_tournament, only: %i[new create]
-    before_action :check_authorization, only: %i[edit update destroy update_status]
+    before_action :check_authorization, only: %i[edit update update_status]
     before_action :check_may_publish, only: :update_status
     before_action :check_if_may_request_publication, only: :toggle_request_publication
 
@@ -24,6 +24,10 @@ module Admin
         @tournaments = current_user_tournaments(status_filter)
       end
     end
+
+    def new; end
+
+    def edit; end
 
     def create
       @tournament.assign_attributes(tournament_params)
@@ -109,7 +113,7 @@ module Admin
 
     def tournament_params
       status = params.dig(:tournament, :status)
-      if @tournament && !Tournament.statuses.include?(status)
+      if @tournament && Tournament.statuses.exclude?(status)
         @tournament.errors.add(:status, 'Invalid Status')
         params[:status] = nil
       end
@@ -128,7 +132,7 @@ module Admin
       return unless params[:status] == 'published'
 
       redirect_to admin_tournaments_url(status: @tournament.status),
-                  alert: 'You are not authorized to publish tournaments'
+                  alert: t(:not_authorized)
     end
 
     def current_user_tournaments(status)

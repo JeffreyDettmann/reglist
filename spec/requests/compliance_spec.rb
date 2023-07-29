@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Compliances', type: :request do
+RSpec.describe 'Compliances' do
   describe 'GET /privacy_policy' do
     it 'succeeds' do
       get '/compliance/privacy_policy'

@@ -3,7 +3,7 @@
 # Individual communication between admins and user
 class Message < ApplicationRecord
   belongs_to :user, optional: true
-  validates_presence_of :body
+  validates :body, presence: true
 
   def sender
     if user.nil?

@@ -5,6 +5,7 @@ class OpportunitiesController < ApplicationController
   skip_before_action :require_allow_cookie
 
   def index
-    @tournaments = Tournament.where(status: :published, registration_close: Date.today..).order(:registration_close)
+    @tournaments = Tournament.where(status: :published,
+                                    registration_close: Time.zone.today..).order(:registration_close)
   end
 end

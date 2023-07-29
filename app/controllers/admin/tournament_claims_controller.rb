@@ -18,6 +18,10 @@ module Admin
       end
     end
 
+    def new; end
+
+    def edit; end
+
     def create
       reasoning = tournament_claim_params[:reasoning]
       @tournament_claim = TournamentClaim.new(tournament: @tournament,
@@ -61,7 +65,7 @@ module Admin
       if params[:approved] == 'true'
         @tournament_claim.approve!
       else
-        @tournament_claim.update_attribute(:approved, false)
+        @tournament_claim.update(approved: false)
       end
       redirect_to(admin_tournament_claims_url,
                   notice: t(:thing_updated, name: :claim))

@@ -2,37 +2,30 @@
 
 require 'rails_helper'
 
-RSpec.describe TournamentClaim, type: :model do
-  before do
-    @user = create(:user, admin: false)
-  end
+RSpec.describe TournamentClaim do
+  let(:user) { create(:user) }
+  let(:claim) { build(:tournament_claim, user:, reasoning: :reasons) }
+  let(:second_claim) { build(:tournament_claim, user:, reasoning: :reasons) }
 
   it 'approves' do
-    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
     create(:tournament, tournament_claims: [claim], name: 'foo')
     assert !claim.reload.approved
     claim.approve!
     claim.reload
-    assert claim.approved
+    expect(claim).to be_approved
   end
 
   it 'does not create duplicate claim' do
-    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
     tournament = create(:tournament, tournament_claims: [claim], name: 'foo')
     expect do
-      create(:tournament_claim, user: @user, tournament:)
+      create(:tournament_claim, user:, tournament:)
     end.to raise_error(ActiveRecord::RecordInvalid)
   end
 
   it 'can create claims for multiple tournaments' do
-    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
+    create(:tournament, tournament_claims: [claim], name: 'foo')
     expect do
-      create(:tournament, tournament_claims: [claim], name: 'foo')
-    end.to change(TournamentClaim, :count).by 1
-
-    claim = build(:tournament_claim, user: @user, reasoning: :reasons)
-    expect do
-      create(:tournament, tournament_claims: [claim], name: 'bar')
-    end.to change(TournamentClaim, :count).by 1
+      create(:tournament, tournament_claims: [second_claim], name: 'bar')
+    end.to change(described_class, :count).by 1
   end
 end

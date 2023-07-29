@@ -3,10 +3,10 @@
 # Holds information relevant to assisting users on whether
 # to register or not
 class Tournament < ApplicationRecord
-  enum status: %i[submitted ignored pending published]
+  enum status: { submitted: 0, ignored: 1, pending: 2, published: 3 }
 
   belongs_to :message, optional: true
-  has_many :tournament_claims
+  has_many :tournament_claims, dependent: :destroy
   has_many :users, through: :tournament_claims
 
   validates :liquipedia_url, uniqueness: true, allow_nil: true, format: { with: %r{\A/ageofempires/} }
@@ -19,11 +19,11 @@ class Tournament < ApplicationRecord
   def owned_by(user)
     return true if user.admin?
 
-    TournamentClaim.where(tournament: self, user:, approved: true).exists?
+    TournamentClaim.exists?(tournament: self, user:, approved: true)
   end
 
   def waiting_claim_by(user)
-    TournamentClaim.where(tournament: self, user:, approved: false).exists?
+    TournamentClaim.exists?(tournament: self, user:, approved: false)
   end
 
   # Array of flags to add
@@ -38,7 +38,7 @@ class Tournament < ApplicationRecord
 
   # Array of flags to remove
   def minus_flags(flags_to_remove)
-    return unless flags.present?
+    return if flags.blank?
 
     flags_to_remove = [flags_to_remove] if flags_to_remove.is_a?(String)
     old_flags = flags.split(':')
@@ -62,7 +62,7 @@ class Tournament < ApplicationRecord
   end
 
   def hygienate_liquipedia_url
-    self.liquipedia_url = nil unless liquipedia_url.present?
+    self.liquipedia_url = nil if liquipedia_url.blank?
     liquipedia_url&.gsub!(%r{https?://[^/]+}, '')
   end
 

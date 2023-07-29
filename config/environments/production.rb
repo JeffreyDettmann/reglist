@@ -64,6 +64,13 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "reglist_production"
 
+  config.x.mail_from = %(Tourney Opportunities <no-reply@tourneyopportunities.net>)
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.default_url_options = { host: 'https://tourneyopportunities.net', protocol: 'https' }
+  config.action_mailer.smtp_settings = { port: 587, address: 'email-smtp.us-east-2.amazonaws.com',
+                                         user_name: ENV.fetch('SMTP_USERNAME'),
+                                         password: ENV.fetch('SMTP_PASSWORD') }
+  config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.

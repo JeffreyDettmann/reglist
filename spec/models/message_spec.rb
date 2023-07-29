@@ -2,9 +2,9 @@
 
 require 'rails_helper'
 
-RSpec.describe Message, type: :model do
+RSpec.describe Message do
   it 'does not require user' do
-    expect { create(:message, body: 'some body') }.to_not raise_exception
+    expect { create(:message, body: 'some body') }.not_to raise_exception
   end
 
   it 'requires body' do

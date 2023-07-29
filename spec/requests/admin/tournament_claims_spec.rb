@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Admin::TournamentClaims', type: :request do
+RSpec.describe 'Admin::TournamentClaims' do
   context 'without accept cookie' do
     it 'redirects home with message' do
       get admin_tournament_claims_path
@@ -14,84 +14,85 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
     before do
       get compliance_dmca_path, params: { accept_cookies: 'true' }
     end
+
     describe 'GET /index' do
       it 'fails if not authenticated' do
         get admin_tournament_claims_path
         expect(response).to redirect_to(new_user_session_path)
       end
+
       context 'when logged in as admin' do
         let(:user) { create(:user) }
-        let(:tournament_a) { create(:tournament, name: :foo) }
-        let(:tournament_b) { create(:tournament, name: :bar) }
+
         before do
           sign_in_admin
+          load_claims
         end
 
         it 'only returns claims with reasoning' do
-          create(:tournament_claim, user:, tournament: tournament_a, approved: true)
-          create(:tournament_claim, user:, tournament: tournament_b, approved: true, reasoning: :reasons)
           get admin_tournament_claims_path
-          approved_claims = assigns(:approved_claims)
-          unapproved_claims = assigns(:unapproved_claims)
-          expect(approved_claims.size).to eq 1
-          expect(unapproved_claims.size).to eq 0
-          expect(approved_claims.first.tournament).to eq tournament_b
+          assigns(:approved_claims).each { |claim| expect(claim.reasoning).to be_present }
+          assigns(:unapproved_claims).each { |claim| expect(claim.reasoning).to be_present }
         end
 
         it 'separates claims by approval' do
-          create(:tournament_claim, user:, tournament: tournament_a, approved: false, reasoning: :reasons)
-          create(:tournament_claim, user:, tournament: tournament_b, approved: true, reasoning: :reasons)
           get admin_tournament_claims_path
-          approved_claims = assigns(:approved_claims)
-          unapproved_claims = assigns(:unapproved_claims)
-          expect(approved_claims.size).to eq 1
-          expect(unapproved_claims.size).to eq 1
-          expect(approved_claims.first.tournament).to eq tournament_b
-          expect(unapproved_claims.first.tournament).to eq tournament_a
+          assert assigns(:approved_claims).size == 1
+          assert assigns(:unapproved_claims).size == 1
+          expect(assigns(:approved_claims).first).to be_approved
+          expect(assigns(:unapproved_claims).first).not_to be_approved
+        end
+
+        def load_claims
+          approved_reasonless = build(:tournament_claim, user:, approved: true)
+          approved_reasoned = build(:tournament_claim, user:, approved: true, reasoning: :reasons)
+          unapproved_reasoned = build(:tournament_claim, user:, approved: false, reasoning: :reasons)
+          create(:tournament, name: 'Approved Reasonless', tournament_claims: [approved_reasonless])
+          create(:tournament, name: 'Approved Reasoned', tournament_claims: [approved_reasoned])
+          create(:tournament, name: 'Unapproved Reasoned', tournament_claims: [unapproved_reasoned])
         end
       end
 
       context 'when logged in as user' do
-        let(:user) { @user }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:other_user) { create(:user) }
-        let(:tournament_a) { create(:tournament, name: :foo) }
-        let(:tournament_b) { create(:tournament, name: :bar) }
-        let(:tournament_c) { create(:tournament, name: :fiz) }
-        let(:tournament_d) { create(:tournament, name: :biz) }
+
         before do
-          sign_in_user
+          sign_in user
+          load_claims
         end
 
         it 'only returns users claims' do
-          create(:tournament_claim, user:, tournament: tournament_a, approved: false, reasoning: :reasons)
-          create(:tournament_claim, user:, tournament: tournament_b, approved: true)
-          create(:tournament_claim, user: other_user, tournament: tournament_c, approved: false, reasoning: :reasons)
-          create(:tournament_claim, user: other_user, tournament: tournament_d, approved: true)
           get admin_tournament_claims_path
-          approved_claims = assigns(:approved_claims)
-          unapproved_claims = assigns(:unapproved_claims)
-          expect(approved_claims.size).to eq 1
-          expect(unapproved_claims.size).to eq 1
-          expect(approved_claims.first.tournament).to eq tournament_b
-          expect(unapproved_claims.first.tournament).to eq tournament_a
+          assert(assigns(:approved_claims).size == 1)
+          assert(assigns(:unapproved_claims).size == 1)
+          assigns(:approved_claims).each { |claim| expect(claim.user).to eq user }
+          assigns(:unapproved_claims).each { |claim| expect(claim.user).to eq user }
         end
 
         it 'separates claims by approval' do
-          create(:tournament_claim, user:, tournament: tournament_a, approved: false, reasoning: :reasons)
-          create(:tournament_claim, user:, tournament: tournament_b, approved: true)
           get admin_tournament_claims_path
-          approved_claims = assigns(:approved_claims)
-          unapproved_claims = assigns(:unapproved_claims)
-          expect(approved_claims.size).to eq 1
-          expect(unapproved_claims.size).to eq 1
-          expect(approved_claims.first.tournament).to eq tournament_b
-          expect(unapproved_claims.first.tournament).to eq tournament_a
+          assert(assigns(:approved_claims).size == 1)
+          assert(assigns(:unapproved_claims).size == 1)
+          expect(assigns(:approved_claims)).to all be_approved
+          assigns(:unapproved_claims).each { |claim| expect(claim).not_to be_approved }
+        end
+
+        def load_claims
+          [build(:tournament_claim, user:, approved: false, reasoning: :reasons),
+           build(:tournament_claim, user:, approved: true),
+           build(:tournament_claim, user: other_user, approved: false, reasoning: :reasons),
+           build(:tournament_claim, user: other_user, approved: true)].each_with_index do |claim, idx|
+            create(:tournament, name: "Tournament #{idx}",
+                                tournament_claims: [claim])
+          end
         end
       end
     end
 
     describe 'GET /new' do
       let(:tournament) { create(:tournament, name: :foo) }
+
       it 'fails if not authenticated' do
         get new_admin_tournament_tournament_claim_path(tournament)
         expect(response).to redirect_to(new_user_session_path)
@@ -111,58 +112,55 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
 
     describe 'POST /create' do
       let(:tournament) { create(:tournament, name: :foo) }
+
       it 'fails if not authenticated' do
         post admin_tournament_tournament_claims_path(tournament)
         expect(response).to redirect_to(new_user_session_path)
       end
 
       context 'when logged in' do
-        let(:user) { @user }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:other_user) { create(:user, confirmed_at: 2.days.ago) }
-        let(:claimable) { create(:tournament, name: 'Claimable') }
-        let(:user_claim) { build(:tournament_claim, user:, reasoning: :reasons) }
-        let(:unclaimable) { create(:tournament, name: 'Unclaimable', tournament_claims: [user_claim]) }
-        let(:other_claim) { build(:tournament_claim, user: other_user, reasoning: :reasons) }
-        let(:other_claimed) { create(:tournament, name: 'Other Claimed', tournament_claims: [other_claim]) }
-        let(:reasoning) { 'Because I should own this' }
-        let(:valid_params) { { tournament_claim: { reasoning: } } }
+        let(:valid_params) { { tournament_claim: { reasoning: :reasons } } }
         let(:approved_params) { { tournament_claim: { approved: true, reasoning: :reasons } } }
 
         before do
-          sign_in_user
+          sign_in user
         end
 
         it 'claims unclaimed tournament' do
           expect do
-            post admin_tournament_tournament_claims_path(claimable), params: valid_params
+            post admin_tournament_tournament_claims_path(tournament), params: valid_params
           end.to change(TournamentClaim, :count).by(1)
           assert !TournamentClaim.last.approved?
         end
 
-        it 'does not claim unclaimed tournament' do
-          unclaimable
+        it 'does not claim tournament with existing user claim' do
+          create(:tournament_claim, user:, tournament:, reasoning: :reasons)
           expect do
-            post admin_tournament_tournament_claims_path(unclaimable), params: valid_params
-          end.to change(TournamentClaim, :count).by(0)
+            post admin_tournament_tournament_claims_path(tournament), params: valid_params
+          end.not_to change(TournamentClaim, :count)
         end
 
         it 'claims tournament claimed by someone else' do
-          other_claimed
+          create(:tournament_claim, user: other_user, tournament:, reasoning: :reasons)
           expect do
-            post admin_tournament_tournament_claims_path(other_claimed), params: valid_params
+            post admin_tournament_tournament_claims_path(tournament), params: valid_params
           end.to change(TournamentClaim, :count).by(1)
           assert !TournamentClaim.last.approved?
         end
 
         it 'fails with blank reason' do
           expect do
-            post admin_tournament_tournament_claims_path(claimable), params: { tournament_claim: { reasoning: '' } }
-          end.to change(TournamentClaim, :count).by(0)
+            post admin_tournament_tournament_claims_path(tournament), params: { tournament_claim: { reasoning: '' } }
+          end.not_to change(TournamentClaim, :count)
         end
 
         it 'does not approve claim even with approved params' do
-          post admin_tournament_tournament_claims_path(claimable), params: approved_params
-          assert !TournamentClaim.last.approved?
+          expect do
+            post admin_tournament_tournament_claims_path(tournament), params: approved_params
+          end.to change(TournamentClaim, :count).by(1)
+          expect(TournamentClaim.last).not_to be_approved
         end
       end
     end
@@ -172,12 +170,14 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
         get edit_admin_tournament_claim_path(27)
         expect(response).to redirect_to(new_user_session_path)
       end
+
       context 'when logged in as user' do
-        let(:user) { @user }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:other_user) { create(:user) }
         let(:tournament) { create(:tournament, name: :foo) }
+
         before do
-          sign_in_user
+          sign_in user
         end
 
         it 'allows edit own claim' do
@@ -199,15 +199,16 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
         patch admin_tournament_claim_path(27)
         expect(response).to redirect_to(new_user_session_path)
       end
+
       context 'when logged in as user' do
-        let(:user) { @user }
-        let(:other_user) { create(:user) }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:tournament) { create(:tournament, name: :foo) }
         let(:reasoning) { 'updated reasons' }
         let(:valid_params) { { tournament_claim: { reasoning: } } }
         let(:approved_params) { { tournament_claim: { approved: true, reasoning: } } }
+
         before do
-          sign_in_user
+          sign_in user
         end
 
         it 'allows update own claim' do
@@ -218,16 +219,17 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
         end
 
         it 'forbids update others claim' do
-          claim = create(:tournament_claim, user: other_user, tournament:, reasoning: :reasons)
+          claim = create(:tournament_claim, user: create(:user), tournament:, reasoning: :reasons)
           patch admin_tournament_claim_path(claim), params: valid_params
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:alert]).to eq I18n.t(:not_authorized)
         end
 
         it 'does not update approval' do
-          claim = create(:tournament_claim, user: other_user, tournament:, reasoning: :reasons)
+          claim = create(:tournament_claim, user:, tournament:, reasoning: :reasons)
           patch admin_tournament_claim_path(claim), params: approved_params
-          assert !claim.reload.approved
+          expect(claim.reload).not_to be_approved
+          expect(claim.reload.reasoning).to eq reasoning
         end
       end
     end
@@ -239,21 +241,24 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
       end
 
       context 'when logged in as user' do
-        let(:user) { @user }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:other_user) { create(:user) }
         let(:tournament) { create(:tournament, name: :foo) }
         let(:reasoning) { 'reasons' }
+
         before do
-          sign_in_user
+          sign_in user
         end
+
         it 'deletes when claimed by user' do
           claim = create(:tournament_claim, user:, tournament:, reasoning:)
           expect { delete admin_tournament_claim_path(claim) }.to change(TournamentClaim, :count).by(-1)
           expect(response).to redirect_to(admin_tournament_claims_path)
         end
+
         it 'fails to delete when claimed by other user' do
           claim = create(:tournament_claim, user: other_user, tournament:, reasoning:)
-          expect { delete admin_tournament_claim_path(claim) }.to change(TournamentClaim, :count).by 0
+          expect { delete admin_tournament_claim_path(claim) }.not_to change(TournamentClaim, :count)
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:alert]).to eq I18n.t(:not_authorized)
         end
@@ -267,25 +272,26 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
       end
 
       context 'when logged in as user' do
-        let(:user) { @user }
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
         let(:tournament) { create(:tournament, name: :foo) }
         let(:reasoning) { 'reasons' }
+        let(:claim) { create(:tournament_claim, user:, tournament:, reasoning:) }
+
         before do
-          sign_in_user
-          @claim = create(:tournament_claim, user:, tournament:, reasoning:)
+          sign_in user
         end
 
         it 'fails when try to approve' do
-          patch approve_admin_tournament_claim_path(@claim), params: { approved: true }
-          assert !@claim.reload.approved?
+          patch approve_admin_tournament_claim_path(claim), params: { approved: true }
+          assert !claim.reload.approved?
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:alert]).to eq I18n.t(:not_authorized)
         end
 
         it 'fails when try to unapprove' do
-          @claim.approve!
-          patch approve_admin_tournament_claim_path(@claim), params: { approved: false }
-          assert @claim.reload.approved?
+          claim.approve!
+          patch approve_admin_tournament_claim_path(claim), params: { approved: false }
+          assert claim.reload.approved?
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:alert]).to eq I18n.t(:not_authorized)
         end
@@ -295,27 +301,31 @@ RSpec.describe 'Admin::TournamentClaims', type: :request do
         let(:user) { create(:user) }
         let(:tournament) { create(:tournament, name: :foo) }
         let(:reasoning) { 'reasons' }
+        let(:claim) { create(:tournament_claim, user:, tournament:, reasoning:) }
+
         before do
           sign_in_admin
-          @claim = create(:tournament_claim, user:, tournament:, reasoning:)
         end
+
         it 'approves' do
-          patch approve_admin_tournament_claim_path(@claim), params: { approved: true }
-          assert @claim.reload.approved?
+          patch approve_admin_tournament_claim_path(claim), params: { approved: true }
+          assert claim.reload.approved?
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:notice]).to eq I18n.t(:thing_updated, name: :claim)
         end
+
         it 'unapproves' do
-          @claim.approve!
-          patch approve_admin_tournament_claim_path(@claim), params: { approved: false }
-          assert !@claim.reload.approved?
+          claim.approve!
+          patch approve_admin_tournament_claim_path(claim), params: { approved: false }
+          assert !claim.reload.approved?
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:notice]).to eq I18n.t(:thing_updated, name: :claim)
         end
+
         it 'does not toggle' do
-          @claim.approve!
-          patch approve_admin_tournament_claim_path(@claim), params: { approved: true }
-          assert @claim.reload.approved?
+          claim.approve!
+          patch approve_admin_tournament_claim_path(claim), params: { approved: true }
+          assert claim.reload.approved?
           expect(response).to redirect_to(admin_tournament_claims_path)
           expect(flash[:notice]).to eq I18n.t(:thing_updated, name: :claim)
         end

@@ -7,7 +7,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable, :confirmable,
          :recoverable, :rememberable, :validatable
 
-  has_many :tournament_claims
+  has_many :tournament_claims, dependent: :destroy
   has_many :tournaments, through: :tournament_claims do
     def approved
       where('tournament_claims.approved' => true)

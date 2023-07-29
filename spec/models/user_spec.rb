@@ -2,21 +2,28 @@
 
 require 'rails_helper'
 
-RSpec.describe User, type: :model do
+RSpec.describe User do
+  let(:user) { create(:user) }
+  let(:other_user) { create(:user) }
+
   it 'basic user is not admin' do
-    user = create(:user)
-    assert !user.admin?
+    expect(user).not_to be_admin
   end
 
   it 'can create admin' do
-    user = create(:user, admin: true)
-    assert user.admin?
+    admin = create(:user, admin: true)
+    expect(admin).to be_admin
   end
 
   it 'scopes approved tournaments' do
-    user = create(:user)
-    other_user = create(:user, email: 'other@example.com')
+    load_tournaments
     create(:tournament, name: 'Unowned tournament')
+    approved_tournaments = user.tournaments.approved
+    expect(approved_tournaments.count).to eq 3
+    expect(approved_tournaments.map(&:name)).to all start_with('Approved tournament')
+  end
+
+  def load_tournaments
     2.times do |time|
       claim = build(:tournament_claim, user:, reasoning: :reasons)
       create(:tournament, name: "Unapproved tournament #{time}", tournament_claims: [claim])
@@ -27,11 +34,5 @@ RSpec.describe User, type: :model do
     end
     claim = build(:tournament_claim, user: other_user, approved: true)
     create(:tournament, name: 'Other tournament', tournament_claims: [claim])
-
-    approved_tournaments = user.tournaments.approved
-    expect(approved_tournaments.count).to eq 3
-    approved_tournaments.each do |tournament|
-      assert tournament.name.start_with?('Approved tournament')
-    end
   end
 end

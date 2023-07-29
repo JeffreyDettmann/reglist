@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Admin::Messages', type: :request do
+RSpec.describe 'Admin::Messages' do
   context 'without accept cookie' do
     it 'redirects home with message' do
       get admin_messages_path
@@ -21,7 +21,14 @@ RSpec.describe 'Admin::Messages', type: :request do
         expect(response).to redirect_to(new_user_session_path)
       end
 
-      context 'logged in as admin' do
+      context 'when logged in as admin' do
+        let(:expected_messages) do
+          { nil => { read: 3, unread: 2, requires_action: 0 },
+            'unread_user@example.com' => { read: 0, unread: 1, requires_action: 0 },
+            'read_user@example.com' => { read: 2, unread: 0, requires_action: 0 },
+            'both@example.com' => { read: 2, unread: 1, requires_action: 2 } }
+        end
+
         before do
           sign_in_admin
           load_messages
@@ -29,26 +36,9 @@ RSpec.describe 'Admin::Messages', type: :request do
 
         it 'returns list of users if no user id param' do
           get admin_messages_path
-          user_messages = assigns(:user_messages)
-          expect(user_messages.size).to eq 4
-          user_messages.each do |email, counts|
-            case email
-            when nil
-              expect(counts[:read]).to eq 3
-              expect(counts[:unread]).to eq 2
-            when 'unread_user@example.com'
-              expect(counts[:read]).to eq 0
-              expect(counts[:unread]).to eq 1
-            when 'read_user@example.com'
-              expect(counts[:read]).to eq 2
-              expect(counts[:unread]).to eq 0
-            when 'both@example.com'
-              expect(counts[:read]).to eq 2
-              expect(counts[:unread]).to eq 1
-              expect(counts[:requires_action]).to eq 2
-            else
-              raise "Unexpected email #{email}"
-            end
+          expect(assigns(:user_messages).size).to eq 4
+          assigns(:user_messages).each do |email, counts|
+            expect(expected_messages[email]).to eq counts
           end
         end
 
@@ -56,37 +46,22 @@ RSpec.describe 'Admin::Messages', type: :request do
           get admin_messages_path, params: { user: 'both@example.com' }
           messages = assigns(:messages)
           expect(messages.size).to eq 3
-          counter = {}
-          counter.default = 0
-          messages.each do |message|
-            counter[message.body] += 1
-          end
-          expect(counter['Unread message']).to eq 1
-          expect(counter['Read message']).to eq 2
+          message_bodies = ['Read message', 'Read message', 'Unread message']
+          expect(messages.map(&:body).sort).to eq message_bodies
         end
 
         it 'returns anonymous if user param is "anonymous"' do
           get admin_messages_path, params: { user: 'anonymous' }
-          messages = assigns(:messages)
-          expect(messages.size).to eq 5
-          counter = {}
-          counter.default = 0
-          messages.each do |message|
-            counter[message.body] += 1
-          end
-          expect(counter['Unread Anonymous Message']).to eq 2
-          expect(counter['Read Anonymous Message']).to eq 3
+          expect(assigns(:messages).size).to eq 5
+          message_bodies = ['Read Anonymous Message', 'Read Anonymous Message', 'Read Anonymous Message',
+                            'Unread Anonymous Message', 'Unread Anonymous Message']
+          expect(assigns(:messages).map(&:body).sort).to eq message_bodies
         end
 
         it 'marks all messages as read, while maintaining read_before_last_save' do
           get admin_messages_path, params: { user: 'anonymous' }
-          expect(assigns(:messages).size).to eq 5
           assigns(:messages).each do |message|
-            if message.body == 'Unread Anonymous Message'
-              expect(message.read_before_last_save).to be false
-            else
-              expect(message.read_before_last_save).to be true
-            end
+            expect(message.read_before_last_save).to eq(message.body != 'Unread Anonymous Message')
             expect(message.read).to be true
           end
         end
@@ -101,9 +76,7 @@ RSpec.describe 'Admin::Messages', type: :request do
           unread_user = create(:user, email: 'unread_user@example.com')
           create(:message, body: 'Unread user message', user: unread_user)
           read_user = create(:user, email: 'read_user@example.com')
-          2.times do
-            create(:message, body: 'Read user message', user: read_user, read: true)
-          end
+          create_list(:message, 2, body: 'Read user message', user: read_user, read: true)
           both_user = create(:user, email: 'both@example.com')
           create(:message, body: 'Unread message', user: both_user)
           create(:message, body: 'Read message', user: both_user, read: true, requires_action: true)
@@ -111,35 +84,25 @@ RSpec.describe 'Admin::Messages', type: :request do
         end
       end
 
-      context 'logged in as user' do
+      context 'when logged in as user' do
+        let(:user) { create(:user, admin: false, confirmed_at: 2.days.ago) }
+        let(:expected_messages) do
+          ['Read message to admin',
+           'Read message from admin',
+           'Unread message to admin',
+           'Unread message from admin']
+        end
+
         before do
-          sign_in_user
-          load_messages(@user)
+          sign_in user
+          load_messages(user)
         end
 
         it 'returns messages in order' do
           get admin_messages_path
           messages = assigns(:messages)
-          expect(messages.size).to eq 4
-          messages.each_with_index do |message, index|
-            case index
-            when 0
-              expect(message.body).to eq 'Read message to admin'
-              expect(message.read).to be true
-            when 1
-              expect(message.body).to eq 'Read message from admin'
-              expect(message.read).to be true
-              expect(message.from_admin).to be true
-            when 2
-              expect(message.body).to eq 'Unread message to admin'
-              expect(message.read).to be false
-            when 3
-              expect(message.body).to eq 'Unread message from admin'
-              expect(message.from_admin).to be true
-              expect(message.read).to be true
-              expect(message.read_before_last_save).to be false
-            end
-          end
+          expect(messages.map(&:body)).to eq expected_messages
+          expect(messages.map(&:from_admin)).to eq [false, true, false, true]
         end
 
         def load_messages(user)
@@ -155,50 +118,50 @@ RSpec.describe 'Admin::Messages', type: :request do
       let(:user) { create(:user) }
       let(:unwanted_message) { create(:message, body: 'Not wanted', user:) }
       let(:anonymous_unwanted_message) { create(:message, body: 'Not wanted from anonymous') }
+
       it 'fails if not authenticated' do
         unwanted_message
         expect do
           delete admin_message_path(unwanted_message)
-        end.to change(Message, :count).by(0)
+        end.not_to change(Message, :count)
         expect(response).to redirect_to(new_user_session_path)
       end
 
-      context 'logged in as admin' do
+      context 'when logged in as admin' do
         before do
           sign_in_admin
+          unwanted_message
+          anonymous_unwanted_message
         end
 
         it 'deletes and redirects to user messages' do
-          unwanted_message
           expect do
             delete admin_message_path(unwanted_message)
           end.to change(Message, :count).by(-1)
-          expect { unwanted_message.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          assert !Message.exists?(id: unwanted_message)
           expect(response).to redirect_to(admin_messages_url(user: user.email))
         end
 
         it 'deletes and redirects to anonymous' do
-          anonymous_unwanted_message
           expect do
             delete admin_message_path(anonymous_unwanted_message)
           end.to change(Message, :count).by(-1)
-          expect { anonymous_unwanted_message.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          assert !Message.exists?(id: anonymous_unwanted_message)
           expect(response).to redirect_to(admin_messages_url(user: 'anonymous'))
         end
       end
 
-      context 'logged in as user' do
+      context 'when logged in as user' do
         before do
           sign_in_user
+          unwanted_message
         end
 
         it 'fails' do
-          unwanted_message
           expect do
             delete admin_message_path(unwanted_message)
-          end.to change(Message, :count).by(0)
-          expect { unwanted_message.reload }.to_not raise_error
-          expect(response).to redirect_to(admin_messages_url)
+          end.not_to change(Message, :count)
+          assert Message.exists?(id: unwanted_message)
           expect(flash[:alert]).to eq I18n.t(:not_authorized)
         end
       end
@@ -208,12 +171,13 @@ RSpec.describe 'Admin::Messages', type: :request do
       let(:user) { create(:user) }
       let(:requires_action) { create(:message, body: 'Requires action', requires_action: true, user:) }
       let(:not_requires_action) { create(:message, body: 'Does not require action', requires_action: false) }
+
       it 'fails if not authenticated' do
         patch toggle_requires_action_admin_message_path(requires_action)
         expect(response).to redirect_to(new_user_session_path)
       end
 
-      context 'logged in as admin' do
+      context 'when logged in as admin' do
         before do
           sign_in_admin
         end
@@ -224,14 +188,14 @@ RSpec.describe 'Admin::Messages', type: :request do
           assert !requires_action.reload.requires_action
         end
 
-        it 'sets requires_action to true when message does not  require action' do
+        it 'sets requires_action to true when message does not require action' do
           patch toggle_requires_action_admin_message_path(not_requires_action)
           expect(response).to redirect_to(admin_messages_url(user: 'anonymous'))
           assert not_requires_action.reload.requires_action
         end
       end
 
-      context 'logged in as user' do
+      context 'when logged in as user' do
         before do
           sign_in_user
         end
