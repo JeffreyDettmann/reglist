@@ -5,7 +5,7 @@ en:
   approved_claims: Approved Claims
   claim: Claim
   claim_tournament: Claim %{tournament}
-  claims: claims
+  claims: Claims
   contact: Contact us
   contact_us: Send us a message!
   conversation_with: Conversation with
@@ -16,6 +16,7 @@ en:
   deadline: Deadline
   delete: Delete
   edit: Edit
+  explain_workflow: What is the workflow for managing a tournament?
   format: Format
   from_anonymous: From Anonymous
   game: Game
@@ -39,6 +40,7 @@ en:
         start_date: start date
         tier: tier
   home_page: Home
+  how_to_claim: How do I claim a tournament?
   ignore: Ignore
   learn_more: Learn more
   links: Links
@@ -59,6 +61,8 @@ en:
   privacy_policy: Privacy Policy
   publish: Publish
   published: Published
+  purpose: This site provides up-to-date information on tournament registration opportunities across all games in the Age of Empires franchise.
+  reason_sign_up: You should create an account if you want to manage the information for one or more tournaments. Registered users can create new tournaments and claim ownership of existing tournaments.
   register: register
   registration: registration
   registration_opportunities: Tournament Registration Opportunities
@@ -89,4 +93,7 @@ en:
   unclaim: Unclaim
   unread: Unread
   update: Update
+  way_to_claim: If you see a tournament you would like to manage, click the 'claim' link and fill out the form explaining how we can verify that you should have permission to manage the tournament's information. For example, your email address may be  listed as a contact on the official rules.
+  why_sign_up: Why should I create an account?
   why_we_should_accept_your_claim: Why we should accept your claim
+  workflow_explanation: When you first create a tournament, it is in the "submitted" state. After you are happy with the information, you "accept" the tournament, which moves it into the "pending" state. You may then request that the administrators publish the tournament. At any stage, if you have questions or concerns, you can send a message to the administrators via the "Send a message!" form.

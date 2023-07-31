@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   root 'opportunities#index'
 
   get 'compliance/dmca'
+  get 'compliance/faq'
   get 'compliance/privacy_policy'
   get 'compliance/terms'
 

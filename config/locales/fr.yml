@@ -16,6 +16,7 @@ fr:
   deadline: fin des inscriptions
   delete: supprimer
   edit: modifier
+  explain_workflow: Comment-on publie un tournoi ?
   format: Format
   from_anonymous: d'anonyme
   game: titre
@@ -39,6 +40,7 @@ fr:
         start_date: date de début
         tier: étage
   home_page: Page d'entrée
+  how_to_claim: Comment on revendique un tournoi ?
   ignore: ignorer
   learn_more: en savoir plus
   links: liens
@@ -59,6 +61,8 @@ fr:
   privacy_policy: Charte de confidentialité
   publish: publier
   published: publié
+  purpose: Ce site fournit des informations à jour sur les possibilités d'inscription aux tournois pour tous les jeux de la franchise Age of Empires.
+  reason_sign_up: On inscrit pour maintenir les infos des tournois. Après inscription, on peut créer de nouveaux tournois et revendiquer les tournois existants.
   register: s'inscrire
   registration: registration
   registration_opportunities: possibilités d'inscription au tournoi
@@ -89,4 +93,7 @@ fr:
   unclaim: Supprimer la revendication
   unread: non lu
   update: Changez
+  way_to_claim: Suivez le lien « revendique » et soumettez le form. Donnez-nous un moyen de vérifier que vous êtes l'un des administrateurs du tournoi, comme votre adresse e-mail est dans les règles.
+  why_sign_up: Pourquoi inscrire ?
   why_we_should_accept_your_claim: Veuillez décrire pourquoi nous devrions approuver votre revendication
+  workflow_explanation: On commence sous l'etape "soumis". Quand le tournoi est prêt à publier, on « accepter » le tournoi, et le tournoi devient « en attente ». On peut demander la publication du tournoi. On peut nous contacter à n'import quelle etape si on a des questions.

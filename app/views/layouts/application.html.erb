@@ -67,6 +67,9 @@
 		  <div>
 			<%= link_to t(:terms_of_use), compliance_terms_path %>
 		  </div>
+		  <div>
+			<%= link_to 'FAQ', compliance_faq_path %>
+		  </div>
       </nav>
       <% if cookies[:allow_cookies].blank? %>
         <%= render 'layouts/cookie_bar' %>
