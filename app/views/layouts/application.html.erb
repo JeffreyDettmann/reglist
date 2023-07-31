@@ -53,6 +53,14 @@
 		  <div>
 			<%= link_to t(:home_page), root_url %>
 		  </div>
+          <% unless current_user %>
+          <div>
+            <%= link_to t('devise.shared.links.sign_in'), new_user_session_path %>
+          </div>
+          <div>
+            <%= link_to t('devise.shared.links.sign_up'), new_user_registration_path %>
+          </div>
+          <% end %>
 		  <div>
 			<%= link_to t(:privacy_policy), compliance_privacy_policy_path %>
 		  </div>
