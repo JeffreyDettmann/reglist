@@ -4,6 +4,7 @@ require:
   - rubocop-rspec
 
 AllCops:
+  NewCops: enable
   Exclude:
     - 'bin/*'
     - 'db/migrate/*'
@@ -17,7 +18,6 @@ AllCops:
     - 'config/initializers/devise.rb'
     - 'test/application_system_test_case.rb'
     - 'test/test_helper.rb'
-  NewCops: enable
 
 Metrics/AbcSize:
   Max: 25
