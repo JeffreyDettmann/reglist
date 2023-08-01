@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    image: postgres:14.7
     volumes:
       - ${REGLIST_DB:-./tmp/db}:/var/lib/postgresql/data
     environment:

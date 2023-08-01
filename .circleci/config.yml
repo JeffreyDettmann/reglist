@@ -1,5 +1,5 @@
 ---
-version: 2
+version: 2.1
 jobs:
   build:
     working_directory: ~/reglist
@@ -9,7 +9,7 @@ jobs:
           PGHOST: localhost
           PGUSER: reglist
           RAILS_ENV: test
-      - image: cimg/postgres:15.3
+      - image: cimg/postgres:14.7
         environment:
           POSTGRES_USER: reglist
           POSTGRES_DB: reglist_test
@@ -23,7 +23,8 @@ jobs:
         key: reglist-{{ checksum "Gemfile.lock" }}
 
       # Bundle install dependencies
-      - run: bundle install --path vendor/bundle
+      - run: bundle config set --local path 'vendor/bundle'
+      - run: bundle install
 
       # Cache Dependencies
       - type: cache-save
