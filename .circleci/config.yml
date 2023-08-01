@@ -4,12 +4,12 @@ jobs:
   build:
     working_directory: ~/reglist
     docker:
-      - image: circleci/ruby:3.1.4
+      - image: cimg/ruby:3.1.4
         environment:
           PGHOST: localhost
           PGUSER: reglist
           RAILS_ENV: test
-      - image: postgres
+      - image: cimg/postgres
         environment:
           POSTGRES_USER: reglist
           POSTGRES_DB: reglist_test
