@@ -9,7 +9,7 @@ jobs:
           PGHOST: localhost
           PGUSER: reglist
           RAILS_ENV: test
-      - image: cimg/postgres:15.3.0
+      - image: cimg/postgres:15.3
         environment:
           POSTGRES_USER: reglist
           POSTGRES_DB: reglist_test
