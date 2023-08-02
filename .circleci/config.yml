@@ -1,8 +1,7 @@
 ---
-version: 2
+version: 2.1
 jobs:
   build:
-    working_directory: ~/reglist
     docker:
       - image: cimg/ruby:3.1.4-node
         environment:
@@ -14,30 +13,34 @@ jobs:
           POSTGRES_USER: reglist
           POSTGRES_DB: reglist_test
           POSTGRES_PASSWORD: ""
+    working_directory: ~/reglist
     steps:
       - checkout
 
-      # Restore Cached Dependencies
-      - type: cache-restore
-        name: Restore bundle cache
-        key: reglist-{{ checksum "Gemfile.lock" }}
+      - restore_cache:
+          name: Restore bundle cache
+          key: reglist-{{ checksum "Gemfile.lock" }}
 
       # Bundle install dependencies
-      - run: bundle config set --local path 'vendor/bundle'
-      - run: bundle install
+      - run:
+          name: Set local bundle path
+          command: bundle config set --local path 'vendor/bundle'
+      - run:
+          name: Bundle install
+          command: bundle install
 
-      # Cache Dependencies
-      - type: cache-save
-        name: Store bundle cache
-        key: reglist-{{ checksum "Gemfile.lock" }}
-        paths:
-          - vendor/bundle
+      - save_cache:
+          name: Store bundle cache
+          key: reglist-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
       # Wait for DB
-      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      # Setup the database
-      - run: bundle exec rake db:setup
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       # Run the tests
-      - run: bundle exec rake
+      - run:
+          name: Run tests
+          command: bundle exec rake
