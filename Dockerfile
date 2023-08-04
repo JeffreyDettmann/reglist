@@ -18,8 +18,6 @@ COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
 RUN bundle install --without development test
 
-RUN rails assets:precompile
-
 RUN mkdir /app/log
 COPY config.ru /app/config.ru
 COPY bin /app/bin
@@ -36,6 +34,8 @@ COPY app/models /app/app/models
 COPY app/helpers /app/app/helpers
 COPY app/controllers /app/app/controllers
 COPY app/views /app/app/views
+
+RUN rails assets:precompile
 
 COPY bin/entrypoint.sh /usr/bin
 RUN chmod +x /usr/bin/entrypoint.sh
