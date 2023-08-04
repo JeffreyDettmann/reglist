@@ -1,7 +1,9 @@
 ---
 version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@7.3.0
 jobs:
-  build:
+  build_test:
     docker:
       - image: cimg/ruby:3.1.4-node
         environment:
@@ -21,7 +23,6 @@ jobs:
           name: Restore bundle cache
           key: reglist-{{ checksum "Gemfile.lock" }}
 
-      # Bundle install dependencies
       - run:
           name: Set local bundle path
           command: bundle config set --local path 'vendor/bundle'
@@ -35,12 +36,29 @@ jobs:
           paths:
             - vendor/bundle
 
-      # Wait for DB
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
-      # Run the tests
       - run:
           name: Run tests
           command: bundle exec rake
+  aws-ecr:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - setup_remote_docker:
+          version: 20.10.11
+      - aws-ecr/build-and-push-image:
+          repo: reglist-web
+
+
+workflows:
+  build_test_deploy:
+    jobs:
+      - build_test
+      - aws-ecr:
+          context:
+            - AWSECR
+          requires:
+            - build_test
