@@ -16,7 +16,9 @@ RUN yarn add @hotwired/stimulus
 
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
-RUN bundle install
+RUN bundle install --without development test
+
+RUN rails assets:precompile
 
 RUN mkdir /app/log
 COPY config.ru /app/config.ru
