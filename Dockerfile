@@ -24,12 +24,15 @@ COPY bin /app/bin
 COPY lib /app/lib
 COPY Rakefile /app/Rakefile
 COPY storage /app/storage
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+COPY Gemfile /app/
+COPY Gemfile.lock /app/
+COPY package.json /app/
+COPY yarn.lock /app/
 COPY app/assets /app/app/assets
 COPY public /app/public
 COPY db /app/db
 COPY config /app/config
+COPY app/javascript /app/app/javascript
 COPY app/models /app/app/models
 COPY app/helpers /app/app/helpers
 COPY app/controllers /app/app/controllers
