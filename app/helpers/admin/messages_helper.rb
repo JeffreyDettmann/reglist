@@ -9,7 +9,7 @@ module Admin
       if request_match
         "#{request_match[1]} #{link_to(request_match[2], admin_tournaments_path(status: :pending))}"
       else
-        message.body
+        sanitize(message.body)
       end
     end
 
