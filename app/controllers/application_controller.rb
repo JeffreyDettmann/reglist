@@ -2,10 +2,10 @@
 
 # Default methods for all controllers
 class ApplicationController < ActionController::Base
-  before_action :check_set_allow_cookies
-  before_action :require_allow_cookie
+  # before_action :check_set_allow_cookies
+  # before_action :require_allow_cookie
   before_action :determine_locale
-  after_action :maybe_remove_cookies
+  # after_action :maybe_remove_cookies
 
   def require_allow_cookie
     return if cookies[:allow_cookies]
