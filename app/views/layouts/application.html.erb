@@ -25,7 +25,16 @@
       <% if notice %><p class="alert alert-success"><%= notice %></p><% end %>
       <% if alert %><p class="alert alert-danger"><%= alert %></p><% end %>
       <%= yield %>
-      <% unless current_page?(root_path) %>
+      <% if current_page?(root_path) %>
+      <nav class="navbar">
+        <div>
+          <%= link_to 'Terms of Use', '/terms.html' %>
+        </div>
+        <div>
+          <%= link_to 'Contact Site Admin', 'https://www.aoezone.net/conversations/add?to=felix.feroc' %>
+        </div>
+      </nav>
+      <% else %>
 	  <nav class="navbar <%= 'collapse' unless current_user %>" id="bottom-navbar">
 		  <div>
 			<%= link_to t(:manage_tournaments), admin_tournaments_path %>
