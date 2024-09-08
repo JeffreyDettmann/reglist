@@ -6,6 +6,6 @@ class OpportunitiesController < ApplicationController
 
   def index
     @tournaments = Tournament.where(status: :published,
-                                    registration_close: Time.zone.today..).order(:registration_close)
+                                    registration_close: Time.zone.tomorrow..).order(:registration_close)
   end
 end
